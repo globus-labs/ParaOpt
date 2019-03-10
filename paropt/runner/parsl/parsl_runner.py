@@ -48,7 +48,7 @@ class ParslRunner:
     script_path = f'{self.templated_scripts_dir}/timeScript_{self.experiment["tool"]["name"]}_{int(time.time())}.sh'
     with open(script_path, "w") as f:
       f.write(script)
-    return script_path
+    return script_path, script
   
   def run(self, debug=False):
     if debug:
@@ -57,9 +57,9 @@ class ParslRunner:
     try:
       for config in self.optimizer:
         logger.info(f'Writing script with config {config}')
-        script_path = self._writeScript(config)
+        script_path, script_content = self._writeScript(config)
         logger.info(f'Running script {script_path}')
-        result = self.parsl_app(script_path).result()
+        result = self.parsl_app(script_content).result()
         self._validateResult(config, result)
         self.storage.saveResult(config, result)
         self.optimizer.register(config, result)
