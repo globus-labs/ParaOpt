@@ -1,14 +1,14 @@
 ## Paropt
-Paropt enables automating the process of finding optimal tool configurations using [Parsl](https://github.com/Parsl/parsl) and [BayseianOptimization](https://github.com/fmfn/BayesianOptimization).
+Paropt enables automating the process of finding optimal tool configurations using [Parsl](https://github.com/Parsl/parsl) and [BayesianOptimization](https://github.com/fmfn/BayesianOptimization).
 
 ### Setup
 ```bash
-pip install git+ssh://git@github.com/macintoshpie/paropt
+pip install git+https://git@github.com/macintoshpie/paropt
 ```
 A runner, optimizer, storage, and a template bash script for running your tool are requried to run the process. Refer to Parsl docs for instance specific configuration.  
 
 ### Example
-This example optimizes a script with two parameters, `parameterA` and `parameterB`, which just sleeps for the sum of their values. All trials are run serially on the local machine in this example.  
+This example optimizes a script with two parameters, `parameterA` and `parameterB`, which just sleeps for the sum of their values. All trials are run serially on the local machine in this example and results are saved in a text file.  
 echoTemplate.sh:
 ```bash
 #!/bin/bash
