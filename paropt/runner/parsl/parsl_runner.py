@@ -22,6 +22,7 @@ class ParslRunner:
 
     self.parsl_config = parsl_config
     self.parsl_app = parsl_app
+    self._dfk = None
     self.optimizer = optimizer
     self.storage = storage if storage != None else LocalFile()
     self.session = storage.Session()
@@ -68,7 +69,7 @@ class ParslRunner:
     """
     if debug:
       parsl.set_stream_logger()
-    parsl.load(self.parsl_config)
+    self._dfk = parsl.load(self.parsl_config)
     try:
       for parameter_configs in self.optimizer:
         logger.info(f'Writing script with configs {parameter_configs}')
@@ -91,7 +92,13 @@ class ParslRunner:
     except Exception as e:
       logger.info('Whoops, something went wrong... {e}')
       logger.exception(traceback.format_exc())
-    logger.info('Finished running trials')
+    logger.info('Finished running tasks')
+  
+  def cleanup(self):
+    """Cleanup DFK and parsl"""
+    logger.info('Cleaning up parsl DFK')
+    self._dfk.cleanup()
+    parsl.clear()
   
   def getMax(self):
     return self.optimizer.getMax()
