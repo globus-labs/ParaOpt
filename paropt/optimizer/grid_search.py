@@ -2,41 +2,44 @@ from .base_optimizer import BaseOptimizer
 import itertools
 from sys import maxsize
 
+from paropt.storage.entities import Parameter, ParameterConfig
+
 class GridSearch(BaseOptimizer):
-  def __init__(self, command_params, num_configs_per_param):
+  def __init__(self, num_configs_per_param):
     """
-    Class for evenly searching the parameter search space. Does NOT implement optimization.
+    Class for evenly searching the parameter search space. Performs NO optimization.
     """
     self.max_outcome = -maxsize
-    self.grid_search_points = []
-    self.command_params = command_params.copy() # copying to ensure dict not modifed while calculating points
+    self.grid_parameter_configs = []
     self.num_configs_per_param = num_configs_per_param
 
+  def setExperiment(self, experiment):
+    parameters = Parameter.parametersToDict(experiment.parameters)
     ncpp = self.num_configs_per_param
     if ncpp < 2:
       raise Exception("num_configs_per_param must be >= 2")
-    separate_parameter_configs = []
-    for param, limits in self.command_params.items():
-      min_val = limits[0]
-      max_val = limits[1]
-      step_size = (max_val - min_val) / (ncpp - 1)
-      linearly_spaced_vals = [ min_val + (i * step_size) for i in range(ncpp) ]
-      separate_parameter_configs.append(linearly_spaced_vals)
-    # get cartesian product of param configs
-    parameter_configs_product = itertools.product(*separate_parameter_configs)
-    # convert sets into dictionaries
-    parameter_names = [name for name, _ in self.command_params.items()]
+    parameters_linearly_spaced_vals = []
+    for parameter in experiment.parameters:
+      step_size = (parameter.maximum - parameter.minimum) / (ncpp - 1)
+      parameter_linearly_spaced_vals = [parameter.minimum + (i * step_size) for i in range(ncpp)]
+      parameters_linearly_spaced_vals.append(parameter_linearly_spaced_vals)
+    
+    # get cartesian product of configs
+    parameter_configs_product = itertools.product(*parameters_linearly_spaced_vals)
+    # create collections of ParameterConfigs from config values
     for parameter_config_collection in parameter_configs_product:
-      self.grid_search_points.append(dict(zip(parameter_names, parameter_config_collection)))
+      parameter_configs = []
+      for parameter, value in zip(experiment.parameters, parameter_config_collection):
+        parameter_configs.append(ParameterConfig(parameter=parameter, value=value))
+      self.grid_parameter_configs.append(parameter_configs)
 
   def __iter__(self):
-    return iter(self.grid_search_points)
+    return iter(self.grid_parameter_configs)
   
-  def register(self, parameters, result):
-    outcome = result[2]
-    if outcome > self.max_outcome:
-      self.max_outcome_parameters = parameters
-      self.max_outcome = outcome
+  def register(self, trial):
+    if trial.outcome > self.max_outcome:
+      self.max_outcome_parameters = trial.parameter_configs
+      self.max_outcome = trial.outcome
 
   def getMax(self):
     return self.max_outcome_parameters, self.max_outcome

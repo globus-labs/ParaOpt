@@ -4,6 +4,6 @@ from .lib import timeCmd
 
 __all__ = [
   'ParslRunner',
-  'LocalConfig',
+  'local_config',
   'timeCmd'
 ]
