@@ -12,12 +12,12 @@ class GridSearch(BaseOptimizer):
     self.max_outcome = -maxsize
     self.grid_parameter_configs = []
     self.num_configs_per_param = num_configs_per_param
+    if self.num_configs_per_param < 2:
+      raise Exception("num_configs_per_param must be >= 2")
 
   def setExperiment(self, experiment):
     parameters = Parameter.parametersToDict(experiment.parameters)
     ncpp = self.num_configs_per_param
-    if ncpp < 2:
-      raise Exception("num_configs_per_param must be >= 2")
     parameters_linearly_spaced_vals = []
     for parameter in experiment.parameters:
       step_size = (parameter.maximum - parameter.minimum) / (ncpp - 1)

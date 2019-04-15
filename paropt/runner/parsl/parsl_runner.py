@@ -18,7 +18,8 @@ class ParslRunner:
               parsl_app,
               optimizer,
               storage=None,
-              experiment=None):
+              experiment=None,
+              logs_root_dir='.'):
 
     self.parsl_config = parsl_config
     self.parsl_app = parsl_app
@@ -33,16 +34,17 @@ class ParslRunner:
     self.command = experiment.command_template_string
 
     # setup paropt info directories
-    self.paropt_dir = f'./optinfo'
+    self.paropt_dir = f'{logs_root_dir}/optinfo'
     if not os.path.exists(self.paropt_dir):
       os.mkdir(self.paropt_dir)
 
-    run_number = 0
     self.run_dir = f'{self.paropt_dir}/exp_{self.experiment.id:03}/{self.run_number:03}'
     if os.path.exists(self.run_dir):
       raise Exception(f'{self.run_dir} already exists, '
                        'cannot continue with inconsistency between database and local run info')
     os.makedirs(self.run_dir)
+    # set parsl's logging directory
+    self.parsl_config.run_dir = f'{self.run_dir}/parsl'
 
     self.templated_scripts_dir = f'{self.run_dir}/templated_scripts'
     os.mkdir(self.templated_scripts_dir)
