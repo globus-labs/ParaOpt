@@ -3,6 +3,7 @@ from socket import timeout
 import urllib
 from urllib.error import HTTPError, URLError
 import logging
+import configparser
 
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor, HighThroughputExecutor
