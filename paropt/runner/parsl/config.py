@@ -13,16 +13,19 @@ from paropt.storage.entities import EC2Compute, LocalCompute
 
 logger = logging.getLogger(__name__)
 
+def getAWSPublicIP():
+  """Fetch Public IP using metadata service"""
+  return urllib.request.urlopen(
+      url="http://169.254.169.254/latest/meta-data/public-ipv4",
+      timeout=5
+    ).read().decode()
+
 def parslConfigFromCompute(compute):
-  """Given a Compute instance, return a setup parsl configuration
-  NOTE: Assumes the paropt is being run on an EC2 instance with access to metadata service
-  """
+  """Given a Compute instance, return a setup parsl configuration"""
   if isinstance(compute, EC2Compute):
+    # NOTE: Assumes the paropt is being run on an EC2 instance with access to metadata service
     try:
-      public_ip = urllib.request.urlopen(
-        url="http://169.254.169.254/latest/meta-data/public-ipv4",
-        timeout=5
-      ).read().decode()
+      public_ip = getAWSPublicIP()
 
       paropt_config_path = os.path.expanduser('~/.paropt/config')
       paropt_config = configparser.ConfigParser()
@@ -39,6 +42,7 @@ def parslConfigFromCompute(compute):
             max_workers=1,
             provider=AWSProvider(
               image_id=compute.ami,
+              instance_type=compute.instance_model,
               worker_init='pip3 install git+https://git@github.com/macintoshpie/paropt',
               region=paropt_config['aws']['region'],
               key_name=paropt_config['aws']['key_name'],
