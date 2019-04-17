@@ -13,7 +13,7 @@ class Experiment(ORMBase):
   parameters = relationship("Parameter", lazy=False)
   trials = relationship("Trial")
   compute_id = Column(Integer, ForeignKey('computes.id'))
-  compute = relationship("Compute")
+  compute = relationship("Compute", lazy='joined')
 
   def __repr__(self):
     return (
