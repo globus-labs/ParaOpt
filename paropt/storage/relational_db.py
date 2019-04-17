@@ -99,11 +99,9 @@ class RelationalDB(StorageBase):
     
     # Assuming experiments are unique on these properties
     # TODO: improve this by hashing some vals for id or make this assertion in orm
-    experiment.compute, _ = self.getOrCreateCompute(session, experiment.compute)
+    hash_attr = experiment.getHash()
     instance = session.query(Experiment) \
-      .filter(Experiment.tool_name == experiment.tool_name) \
-      .filter(Experiment.command_template_string == experiment.command_template_string) \
-      .filter(Experiment.compute_id == experiment.compute.id) \
+      .filter(Experiment.hash == hash_attr) \
       .first()
     if instance:
       last_run_number = self.getLastRunNumber(session, instance.id)
