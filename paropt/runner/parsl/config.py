@@ -1,3 +1,4 @@
+import os
 from socket import timeout
 import urllib
 from urllib.error import HTTPError, URLError
