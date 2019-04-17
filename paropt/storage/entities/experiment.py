@@ -12,6 +12,8 @@ class Experiment(ORMBase):
   command_template_string = Column(String, nullable=False)
   parameters = relationship("Parameter", lazy=False)
   trials = relationship("Trial")
+  compute_id = Column(Integer, ForeignKey('computes.id'))
+  compute = relationship("Compute")
 
   def __repr__(self):
     return (
@@ -19,7 +21,8 @@ class Experiment(ORMBase):
       f'id={self.id}, '
       f'tool_name={self.tool_name}, '
       f'parameters={self.parameters}, '
-      f'command_template_string={self.command_template_string})'
+      f'command_template_string={self.command_template_string}), '
+      f'compute={self.compute!r}'
     )
   
   def asdict(self):

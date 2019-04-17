@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 class ParslRunner:
   def __init__(self,
-              compute,
               parsl_app,
               optimizer,
               storage=None,
@@ -28,13 +27,15 @@ class ParslRunner:
     self.storage = storage if storage != None else LocalFile()
     self.session = storage.Session()
 
-    self.compute, _ = storage.getOrCreateCompute(self.session, compute)
-    self.parsl_config = parslConfigFromCompute(compute)
-
+    # get or create the experiment
     self.experiment, last_run_number, _ = storage.getOrCreateExperiment(self.session, experiment)
     self.run_number = last_run_number + 1
     self.optimizer.setExperiment(self.experiment)
     self.command = experiment.command_template_string
+
+    # setup compute
+    self.compute = self.experiment.compute
+    self.parsl_config = parslConfigFromCompute(self.compute)
 
     # setup paropt info directories
     self.paropt_dir = f'{logs_root_dir}/optinfo'
@@ -55,7 +56,6 @@ class ParslRunner:
   def __repr__(self):
     return '\n'.join([
       f'ParslRunner(',
-      f'  compute={self.compute!r}',
       f'  parsl_app={self.parsl_app!r}',
       f'  optimizer={self.optimizer!r}',
       f'  storage={self.storage!r}',
@@ -97,7 +97,6 @@ class ParslRunner:
           parameter_configs=parameter_configs,
           run_number=self.run_number,
           experiment_id=self.experiment.id,
-          compute_id=self.compute.id
         )
         self.storage.saveResult(self.session, trial)
         self.optimizer.register(trial)

@@ -8,7 +8,7 @@ class Compute(ORMBase):
 
   id = Column(Integer, primary_key=True)
   type = Column(String(20))
-  trials = relationship("Trial")
+  experiments = relationship("Experiment")
 
   __mapper_args__ = {
     'polymorphic_on': type,
