@@ -13,7 +13,8 @@ class Trial(ORMBase):
   experiment_id = Column(Integer, ForeignKey('experiments.id'), nullable=False)
   run_number = Column(Integer, nullable=False)
   outcome = Column(Float, nullable=False)
-  parameter_configs = relationship("ParameterConfig")
+  parameter_configs = relationship('ParameterConfig')
+  compute_id = Column(Integer, ForeignKey('computes.id'))
   timestamp = Column(TIMESTAMP, server_default=func.now(), onupdate=func.current_timestamp())
 
   def __repr__(self):

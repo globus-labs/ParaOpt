@@ -9,24 +9,27 @@ import parsl
 from paropt import setFileLogger
 from paropt.storage import LocalFile
 from paropt.storage.entities import Trial, ParameterConfig
+from paropt.runner.parsl.config import parslConfigFromCompute
 
 logger = logging.getLogger(__name__)
 
 class ParslRunner:
   def __init__(self,
-              parsl_config,
+              compute,
               parsl_app,
               optimizer,
               storage=None,
               experiment=None,
               logs_root_dir='.'):
 
-    self.parsl_config = parsl_config
     self.parsl_app = parsl_app
     self._dfk = None
     self.optimizer = optimizer
     self.storage = storage if storage != None else LocalFile()
     self.session = storage.Session()
+
+    self.compute, _ = storage.getOrCreateCompute(self.session, compute)
+    self.parsl_config = parslConfigFromCompute(compute)
 
     self.experiment, last_run_number, _ = storage.getOrCreateExperiment(self.session, experiment)
     self.run_number = last_run_number + 1
@@ -35,21 +38,30 @@ class ParslRunner:
 
     # setup paropt info directories
     self.paropt_dir = f'{logs_root_dir}/optinfo'
-    if not os.path.exists(self.paropt_dir):
-      os.mkdir(self.paropt_dir)
+    if not os.path.exists(logs_root_dir):
+      raise Exception(f'Logs directory does not exist: {logs_root_dir}')
+    os.makedirs(self.paropt_dir, exist_ok=True)
+    
+    # setup directory and files for this run
+    self.exp_run_dir = f'{self.paropt_dir}/exp_{self.experiment.id:03}/{self.run_number:03}'
+    os.makedirs(self.exp_run_dir, exist_ok=True)
+    setFileLogger(f'{self.exp_run_dir}/paropt.log')
+    self.templated_scripts_dir = f'{self.exp_run_dir}/templated_scripts'
 
-    self.run_dir = f'{self.paropt_dir}/exp_{self.experiment.id:03}/{self.run_number:03}'
-    if os.path.exists(self.run_dir):
-      raise Exception(f'{self.run_dir} already exists, '
-                       'cannot continue with inconsistency between database and local run info')
-    os.makedirs(self.run_dir)
     # set parsl's logging directory
-    self.parsl_config.run_dir = f'{self.run_dir}/parsl'
-
-    self.templated_scripts_dir = f'{self.run_dir}/templated_scripts'
-    os.mkdir(self.templated_scripts_dir)
-
-    setFileLogger(f'{self.run_dir}/paropt.log')
+    self.parsl_config.run_dir = f'{self.exp_run_dir}/parsl'
+    os.makedirs(self.templated_scripts_dir, exist_ok=True)
+  
+  def __repr__(self):
+    return '\n'.join([
+      f'ParslRunner(',
+      f'  compute={self.compute!r}',
+      f'  parsl_app={self.parsl_app!r}',
+      f'  optimizer={self.optimizer!r}',
+      f'  storage={self.storage!r}',
+      f'  experiment={self.experiment!r}',
+      f')\n'
+    ])
 
   def _validateResult(self, params, res):
     if res[0] != 0:
@@ -72,14 +84,11 @@ class ParslRunner:
     if debug:
       parsl.set_stream_logger()
     self._dfk = parsl.load(self.parsl_config)
+    logger.info(f'Starting ParslRunner with config\n{self}')
     try:
       for parameter_configs in self.optimizer:
         logger.info(f'Writing script with configs {parameter_configs}')
         script_path, script_content = self._writeScript(parameter_configs)
-        # TODO: add user hook for customization
-        # Hook should take in tool param configuration and current parsl configuration as arguments
-        # Hook should return a new parsl configuration if it needs to be changed, or None if not
-        # self.prerun_hook(config, self.parsl_config)
         logger.info(f'Starting trial with script at {script_path}')
         result = self.parsl_app(script_content).result()
         self._validateResult(parameter_configs, result)
@@ -87,14 +96,15 @@ class ParslRunner:
           outcome=result[2],
           parameter_configs=parameter_configs,
           run_number=self.run_number,
-          experiment_id=self.experiment.id
+          experiment_id=self.experiment.id,
+          compute_id=self.compute.id
         )
         self.storage.saveResult(self.session, trial)
         self.optimizer.register(trial)
     except Exception as e:
       logger.info('Whoops, something went wrong... {e}')
       logger.exception(traceback.format_exc())
-    logger.info('Finished running tasks')
+    logger.info('Finished running tasks\n\n\n')
   
   def cleanup(self):
     """Cleanup DFK and parsl"""

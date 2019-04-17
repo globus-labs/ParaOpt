@@ -8,10 +8,8 @@ from sqlalchemy.sql.expression import func
 
 from .entities.orm_base import create_all
 from .storage_base import StorageBase
-from .entities.trial import Trial
-from .entities.parameter_config import ParameterConfig
-from .entities.parameter import Parameter
-from .entities.experiment import Experiment
+from .entities import (Trial, Parameter, Experiment, ParameterConfig,
+  Compute, EC2Compute, LocalCompute)
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +77,10 @@ class RelationalDB(StorageBase):
     
     return all_results
   
+  def _assertIsInstanceOf(self, instance, clss):
+    if not isinstance(instance, clss):
+      raise Exception(f'Provided instance must be of type {clss.__name__}')
+
   def getExperiment(self, session, experiment_id):
     if not self.initialized:
       self._setup()
@@ -93,10 +95,8 @@ class RelationalDB(StorageBase):
     if not self.initialized:
       self._setup()
 
-    if not isinstance(experiment, Experiment):
-      raise Exception('Provided experiment must be instance of Experiment')
+    self._assertIsInstanceOf(experiment, Experiment)
     
-    # session = self.Session()
     # Assuming experiments are unique on these properties
     # TODO: improve this by hashing some vals for id or make this assertion in orm
     instance = session.query(Experiment) \
@@ -117,3 +117,32 @@ class RelationalDB(StorageBase):
         raise
       last_run_number = self.getLastRunNumber(session, experiment.id)
       return experiment, last_run_number, True
+  
+  def getOrCreateCompute(self, session, compute):
+    if not self.initialized:
+      self._setup()
+
+    self._assertIsInstanceOf(compute, Compute)
+    if isinstance(compute, EC2Compute):
+      foundCompute = session.query(EC2Compute) \
+        .filter(EC2Compute.instance_family == compute.instance_family) \
+        .filter(EC2Compute.instance_model == compute.instance_model) \
+        .filter(EC2Compute.ami == compute.ami) \
+        .first()
+    elif isinstance(compute, LocalCompute):
+      foundCompute = session.query(LocalCompute) \
+        .filter(LocalCompute.max_threads == compute.max_threads) \
+        .first()
+
+    if foundCompute:
+      return foundCompute, False
+    else:
+      # create compute
+      logger.info("Creating new compute:\n{}".format(compute))
+      session.add(compute)
+      try:
+        session.commit()
+      except:
+        session.rollback()
+        raise
+      return compute, True
