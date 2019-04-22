@@ -46,7 +46,6 @@ class Experiment(ORMBase):
     return self.hash
 
 def set_hash(mapper, connect, target):
-  print("CALLED THE INSERT THING")
   target.setHash()
 
 listen(Experiment, 'before_insert', set_hash)
