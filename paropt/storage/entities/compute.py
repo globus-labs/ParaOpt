@@ -30,6 +30,14 @@ class EC2Compute(Compute):
       f'ami={self.ami}'
       f')'
     )
+  
+  def asdict(self):
+    return {
+      'type': self.type,
+      'instance_family': self.instance_family,
+      'instance_model': self.instance_model,
+      'ami': self.ami
+    }
 
 class LocalCompute(Compute):
   max_threads = Column(Integer)
@@ -42,3 +50,9 @@ class LocalCompute(Compute):
       f'max_threads={self.max_threads}'
       f')'
     )
+  
+  def asdict(self):
+    return {
+      'type': self.type,
+      'max_threads': self.max_threads
+    }

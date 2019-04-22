@@ -123,16 +123,18 @@ class RelationalDB(StorageBase):
       self._setup()
 
     self._assertIsInstanceOf(compute, Compute)
-    if isinstance(compute, EC2Compute):
+    if compute.type == "ec2":
       foundCompute = session.query(EC2Compute) \
         .filter(EC2Compute.instance_family == compute.instance_family) \
         .filter(EC2Compute.instance_model == compute.instance_model) \
         .filter(EC2Compute.ami == compute.ami) \
         .first()
-    elif isinstance(compute, LocalCompute):
+    elif compute.type == "local":
       foundCompute = session.query(LocalCompute) \
         .filter(LocalCompute.max_threads == compute.max_threads) \
         .first()
+    else:
+      raise Exception("Unrecognized type of compute: {}".format(compute))
 
     if foundCompute:
       return foundCompute, False

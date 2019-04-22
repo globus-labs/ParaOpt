@@ -34,7 +34,8 @@ class Experiment(ORMBase):
       'id': self.id,
       'tool_name': self.tool_name, 
       'parameters': [parameter.asdict() for parameter in self.parameters],
-      'command_template_string': self.command_template_string
+      'command_template_string': self.command_template_string,
+      'compute': self.compute.asdict()
     }
   
   def getHash(self):
