@@ -27,8 +27,8 @@ def parslConfigFromCompute(compute):
       public_ip = getAWSPublicIP()
 
       # get the required environment variables
-      required_env_vars = ["PAROPT_AWS_REGION", "PAROPT_AWS_KEY_NAME", "PAROPT_AWS_STATE_FILE_PATH"]
-      env_vars = {varname: os.getenv(varname) for varname in required_env_vars}
+      required_env_vars = ["PAROPT_AWS_REGION", "PAROPT_AWS_KEY_NAME", "PAROPT_AWS_STATE_FILE"]
+      env_vars = {varname.replace('PAROPT_AWS_', '').lower(): os.getenv(varname) for varname in required_env_vars}
       missing_vars = [varname for varname, value in env_vars.items() if value == None]
       if missing_vars:
         raise Exception("Missing required environment variables for running parsl with AWS:\n{}".format(missing_vars))
