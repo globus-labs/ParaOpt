@@ -3,7 +3,6 @@ from socket import timeout
 import urllib
 from urllib.error import HTTPError, URLError
 import logging
-import configparser
 
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor, HighThroughputExecutor
@@ -27,9 +26,12 @@ def parslConfigFromCompute(compute):
     try:
       public_ip = getAWSPublicIP()
 
-      paropt_config_path = os.path.expanduser('~/.paropt/config')
-      paropt_config = configparser.ConfigParser()
-      paropt_config.read(paropt_config_path)
+      # get the required environment variables
+      required_env_vars = ["PAROPT_AWS_REGION", "PAROPT_AWS_KEY_NAME", "PAROPT_AWS_STATE_FILE_PATH"]
+      env_vars = {varname: os.getenv(varname) for varname in required_env_vars}
+      missing_vars = [varname for varname, value in env_vars.items() if value == None]
+      if missing_vars:
+        raise Exception("Missing required environment variables for running parsl with AWS:\n{}".format(missing_vars))
 
       parsl_config = Config(
         executors=[
@@ -44,14 +46,12 @@ def parslConfigFromCompute(compute):
               image_id=compute.ami,
               instance_type=compute.instance_model,
               worker_init='pip3 install git+https://git@github.com/macintoshpie/paropt',
-              region=paropt_config['aws']['region'],
-              key_name=paropt_config['aws']['key_name'],
-              state_file=paropt_config['aws']['state_file'],
               nodes_per_block=1,
               init_blocks=1,
               max_blocks=1,
               min_blocks=0,
               walltime='01:00:00',
+              **env_vars
             ),
           )
         ],
