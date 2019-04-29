@@ -3,6 +3,8 @@ from sqlalchemy.orm import relationship, backref
 
 from .orm_base import ORMBase
 
+from .parameter import PARAMETER_TYPE_FLOAT
+
 class ParameterConfig(ORMBase):
   __tablename__ = 'parameterconfigs'
 
@@ -26,4 +28,9 @@ class ParameterConfig(ORMBase):
 
   @staticmethod
   def configsToDict(parameter_configs):
-    return {config.parameter.name: config.value for config in parameter_configs}
+    # TODO: Properly implement parameter typing - casting of values should not be done here
+    d = {}
+    for config in parameter_configs:
+      v = config.value if config.parameter.type == PARAMETER_TYPE_FLOAT else int(config.value)
+      d[config.parameter.name] = v
+    return d
