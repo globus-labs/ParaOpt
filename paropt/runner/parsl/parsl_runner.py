@@ -52,6 +52,11 @@ class ParslRunner:
     # set parsl's logging directory
     self.parsl_config.run_dir = f'{self.exp_run_dir}/parsl'
     os.makedirs(self.templated_scripts_dir, exist_ok=True)
+
+    self.run_result = {
+      'success': False,
+      'message': ''
+    }
   
   def __repr__(self):
     return '\n'.join([
@@ -100,10 +105,17 @@ class ParslRunner:
         )
         self.storage.saveResult(self.session, trial)
         self.optimizer.register(trial)
+      
+      self.run_result['success'] = True
+      self.run_result['message'] = (f'Successfully completed trials for '
+                                    f'experiment {self.experiment.id} run {self.run_number}')
     except Exception as e:
-      logger.info('Whoops, something went wrong... {e}')
-      logger.exception(traceback.format_exc())
-    logger.info('Finished running tasks\n\n\n')
+      err_traceback = traceback.format_exc()
+      self.run_result['success'] = False
+      self.run_result['message'] = (f'Failed to complete trials, experiment {self.experiment.id} '
+                                    f'run {self.run_number}:\nError: {e}\n{err_traceback}')
+      logger.exception(err_traceback)
+    logger.info(f'Finished; Run result: {self.run_result}')
   
   def cleanup(self):
     """Cleanup DFK and parsl"""
