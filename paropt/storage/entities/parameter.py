@@ -11,7 +11,7 @@ class Parameter(ORMBase):
 
   id = Column(Integer, primary_key=True)
   name = Column(String, nullable=False)
-  type = Column(String(20))
+  type = Column(String(20), nullable=False, default=PARAMETER_TYPE_FLOAT)
   minimum = Column(Integer, nullable=False)
   maximum = Column(Integer, nullable=False)
   experiment_id = Column(Integer, ForeignKey('experiments.id'))
