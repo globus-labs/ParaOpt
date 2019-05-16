@@ -51,6 +51,7 @@ def parslConfigFromCompute(compute):
               max_blocks=1,
               min_blocks=0,
               walltime='01:00:00',
+              iam_instance_profile_arn='arn:aws:iam::941354386215:instance-profile/paropt_testrole',
               **env_vars
             ),
           )

@@ -1,6 +1,6 @@
 from .parsl_runner import ParslRunner
 from .config import parslConfigFromCompute
-from .lib import timeCmd
+from .lib import timeCommand
 
 __all__ = [
   'ParslRunner',

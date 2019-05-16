@@ -9,6 +9,7 @@ import parsl
 from paropt import setFileLogger
 from paropt.storage import LocalFile
 from paropt.storage.entities import Trial, ParameterConfig
+import paropt.runner
 from paropt.runner.parsl.config import parslConfigFromCompute
 
 logger = logging.getLogger(__name__)
@@ -72,12 +73,12 @@ class ParslRunner:
     if res[0] != 0:
       raise Exception("Non-zero exit from trial:\n  ParameterConfigs: {}\n  Output: {}".format(params, res[1]))
 
-  def _writeScript(self, parameter_configs):
+  def _writeScript(self, template, parameter_configs, file_prefix):
     """
     Format the template with provided parameter configurations and save locally for reference
     """
-    script = Template(self.command).safe_substitute(ParameterConfig.configsToDict(parameter_configs))
-    script_path = f'{self.templated_scripts_dir}/timeScript_{self.experiment.tool_name}_{int(time.time())}.sh'
+    script = Template(template).safe_substitute(ParameterConfig.configsToDict(parameter_configs))
+    script_path = f'{self.templated_scripts_dir}/{file_prefix}_{self.experiment.tool_name}_{int(time.time())}.sh'
     with open(script_path, "w") as f:
       f.write(script)
     return script_path, script
@@ -93,9 +94,19 @@ class ParslRunner:
     try:
       for parameter_configs in self.optimizer:
         logger.info(f'Writing script with configs {parameter_configs}')
-        script_path, script_content = self._writeScript(parameter_configs)
-        logger.info(f'Starting trial with script at {script_path}')
-        result = self.parsl_app(script_content).result()
+        command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
+        if self.experiment.setup_template_string != None:
+          _, setup_script_content = self._writeScript(self.experiment.setup_template_string, parameter_configs, 'setup')
+        else:
+          setup_script_content = None
+
+        logger.info(f'Starting trial with script at {command_script_path}')
+        runConfig = paropt.runner.RunConfig(
+          command_script_content=command_script_content,
+          experiment_dict=self.experiment.asdict(),
+          setup_script_content=setup_script_content,
+        )
+        result = self.parsl_app(runConfig).result()
         self._validateResult(parameter_configs, result)
         trial = Trial(
           outcome=result[2],

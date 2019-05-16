@@ -13,6 +13,7 @@ class Experiment(ORMBase):
   # TODO: replace these string cols with relationships to entities
   tool_name = Column(String, nullable=False)
   command_template_string = Column(String, nullable=False)
+  setup_template_string = Column(String)
   parameters = relationship("Parameter", lazy=False)
   trials = relationship("Trial")
   compute_id = Column(Integer, ForeignKey('computes.id'))
@@ -26,6 +27,7 @@ class Experiment(ORMBase):
       f'tool_name={self.tool_name}, '
       f'parameters={self.parameters!r}, '
       f'command_template_string={self.command_template_string}), '
+      f'setup_template_string={self.setup_template_string}), '
       f'compute={self.compute!r})'
     )
   
@@ -35,6 +37,7 @@ class Experiment(ORMBase):
       'tool_name': self.tool_name, 
       'parameters': [parameter.asdict() for parameter in self.parameters],
       'command_template_string': self.command_template_string,
+      'setup_template_string': self.setup_template_string,
       'compute': self.compute.asdict()
     }
   
