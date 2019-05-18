@@ -49,9 +49,30 @@ class RelationalDB(StorageBase):
     # initialize database
     logger.info(f'Setting up db engine')
     # create database if it doesn't exist
+    created_db = False
     if not database_exists(self.engine.url):
+      created_db = True
       create_database(self.engine.url)
     create_all(self.engine)
+
+    # update hashes of experiments if necessary
+    # this should only happen when the columns of the experiment change
+    if not created_db:
+      try:
+        session = self.Session()
+        test_exp = session.query(Experiment).first()
+        if test_exp != None and test_exp.getHash() != test_exp.hash:
+          logger.info(f'Updating hashes of all experiments... This may take a minute ({test_exp.getHash()}, {test_exp.hash})')
+          # TODO: replace with more efficient solution (ie generator or something)
+          for exp in session.query(Experiment).all():
+            exp.setHash()
+          session.commit()
+      except:
+        session.rollback()
+        raise
+      finally:
+        session.close()
+
     self.initialized = True
 
   def saveResult(self, session, trial):
