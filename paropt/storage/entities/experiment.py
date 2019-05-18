@@ -22,9 +22,9 @@ class Experiment(ORMBase):
   hash = Column(String)
 
   def __repr__(self):
-    """IMPORTANT: Do not add id to the representation - that would break our hashing"""
     return (
       f'Experiment('
+      f'id={self.id}, '
       f'tool_name={self.tool_name}, '
       f'parameters={self.parameters!r}, '
       f'command_template_string={self.command_template_string}), '
@@ -45,9 +45,41 @@ class Experiment(ORMBase):
     }
   
   def getHash(self):
-    return md5(str(self).encode()).hexdigest()
+    """Get hash of experiment
+    IMPORTANT: columns/attributes used in hash used should either implement a getHashAttrs() method,
+    or have a string representation where the result does NOT contain any database id's!
+    If Id's are included, the hash will break
+
+    This is used to identify unique experiments, specifically by the storage method
+    getOrCreateExperiment(), which uses this to check if the experiment already exists.
+    """
+    hash_attrs = [
+      'tool_name',
+      'parameters',
+      'command_template_string',
+      'setup_template_string',
+      'compute'
+    ]
+    hash_strings = []
+    for attr_name in hash_attrs:
+      attr = getattr(self, attr_name)
+      # if the attribute has the getHashAttrs() method, use that to get values
+      # else, just stringify it
+      if isinstance(attr, list):
+        for subattr in attr:
+          if getattr(subattr, 'getHashAttrs', None):
+            hash_strings.append(subattr.getHashAttrs())
+          else:
+            hash_strings.append(str(subattr))
+      elif getattr(attr, 'getHashAttrs', None):
+        hash_strings.append(attr.getHashAttrs())
+      else:
+        hash_strings.append(str(attr))
+    print("\n\n\nHash String: {}\n\nfor experiment: {}\n\n".format("".join(hash_strings), self))
+    return md5("".join(hash_strings).encode()).hexdigest()
   
   def setHash(self):
+    """Should be called when: 1) experiment is created 2) change of columns used in hash"""
     self.hash = self.getHash()
     return self.hash
 
