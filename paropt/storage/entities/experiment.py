@@ -75,7 +75,6 @@ class Experiment(ORMBase):
         hash_strings.append(attr.getHashAttrs())
       else:
         hash_strings.append(str(attr))
-    print("\n\n\nHash String: {}\n\nfor experiment: {}\n\n".format("".join(hash_strings), self))
     return md5("".join(hash_strings).encode()).hexdigest()
   
   def setHash(self):
