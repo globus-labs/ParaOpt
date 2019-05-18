@@ -29,7 +29,20 @@ class Parameter(ORMBase):
       'minimum': self.minimum,
       'maximum': self.maximum
     }
-
+  
+  def getHashAttrs(self):
+    """Return values of attributes that should be hashed. Used by Experiment.getHash()"""
+    hash_attrs = [
+      'name',
+      'minimum',
+      'maximum',
+      'type',
+    ]
+    attr_str = ""
+    for attr in hash_attrs:
+      attr_str += str(getattr(self, attr))
+    return attr_str
+    
   @staticmethod
   def parametersToDict(parameterList):
     return {param.name: [param.minimum, param.maximum] for param in parameterList}
