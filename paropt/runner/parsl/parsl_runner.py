@@ -70,8 +70,9 @@ class ParslRunner:
     ])
 
   def _validateResult(self, params, res):
-    if res[0] != 0:
-      raise Exception("Non-zero exit from trial:\n  ParameterConfigs: {}\n  Output: {}".format(params, res[1]))
+    if res['returncode'] != 0:
+      raise Exception(f"Non-zero exit from trial:\n"
+                      f"  ParameterConfigs: {params}\n  Output: {res['stdout']}")
 
   def _writeScript(self, template, parameter_configs, file_prefix):
     """
@@ -99,17 +100,22 @@ class ParslRunner:
           _, setup_script_content = self._writeScript(self.experiment.setup_template_string, parameter_configs, 'setup')
         else:
           setup_script_content = None
+        if self.experiment.finish_template_string != None:
+          _, finish_script_content = self._writeScript(self.experiment.finish_template_string, parameter_configs, 'finish')
+        else:
+          finish_script_content = None
 
         logger.info(f'Starting trial with script at {command_script_path}')
         runConfig = paropt.runner.RunConfig(
           command_script_content=command_script_content,
           experiment_dict=self.experiment.asdict(),
           setup_script_content=setup_script_content,
+          finish_script_content=finish_script_content,
         )
         result = self.parsl_app(runConfig).result()
         self._validateResult(parameter_configs, result)
         trial = Trial(
-          outcome=result[2],
+          outcome=result['run_time'],
           parameter_configs=parameter_configs,
           run_number=self.run_number,
           experiment_id=self.experiment.id,
