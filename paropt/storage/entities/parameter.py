@@ -27,7 +27,8 @@ class Parameter(ORMBase):
     return {
       'name': self.name,
       'minimum': self.minimum,
-      'maximum': self.maximum
+      'maximum': self.maximum,
+      'type': self.type
     }
   
   def getHashAttrs(self):
