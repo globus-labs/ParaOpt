@@ -6,6 +6,8 @@ from sqlalchemy.event import listens_for, listen
 
 from .orm_base import ORMBase
 
+from paropt import logger
+
 class Experiment(ORMBase):
   __tablename__ = 'experiments'
 
@@ -75,6 +77,7 @@ class Experiment(ORMBase):
         hash_strings.append(attr.getHashAttrs())
       else:
         hash_strings.append(str(attr))
+    logger.info(f'String used for hash: {"".join(hash_strings)}')
     return md5("".join(hash_strings).encode()).hexdigest()
   
   def setHash(self):
