@@ -27,7 +27,7 @@ def parslConfigFromCompute(compute):
       public_ip = getAWSPublicIP()
 
       # get the required environment variables
-      required_env_vars = ["PAROPT_AWS_REGION", "PAROPT_AWS_KEY_NAME", "PAROPT_AWS_STATE_FILE"]
+      required_env_vars = ["PAROPT_AWS_REGION", "PAROPT_AWS_KEY_NAME", "PAROPT_AWS_STATE_FILE", "PAROPT_AWS_IAM_INSTANCE_PROFILE_ARN"]
       env_vars = {varname.replace('PAROPT_AWS_', '').lower(): os.getenv(varname) for varname in required_env_vars}
       missing_vars = [varname for varname, value in env_vars.items() if value == None]
       if missing_vars:
@@ -52,7 +52,6 @@ def parslConfigFromCompute(compute):
               min_blocks=0,
               walltime='01:00:00',
               spot_max_bid=2.0,
-              iam_instance_profile_arn='arn:aws:iam::941354386215:instance-profile/paropt_testrole',
               **env_vars
             ),
           )
