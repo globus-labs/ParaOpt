@@ -19,6 +19,7 @@ class BayesianOptimizer(BaseOptimizer):
     self.parameters_by_name = None
     self.optimizer = None
     self.previous_trials = []
+    
 
     self.utility = utility if utility != None else UtilityFunction(kind="ucb", kappa=2.5, xi=0.0)
     self.n_init = n_init
@@ -27,6 +28,9 @@ class BayesianOptimizer(BaseOptimizer):
     self.n_initted = 0
     self.n_itered = 0
     self.previous_trials_loaded = False
+
+    self.all_trials = []
+    self.visited_config = {} # store a string of config, and value is the index in previous_trials
   
   def setExperiment(self, experiment):
     """
@@ -56,10 +60,11 @@ class BayesianOptimizer(BaseOptimizer):
       params_dict = self._trialParamsToDict(trial)
       logger.info(f'Registering: {params_dict}, {trial.outcome}')
       try:
-        self.optimizer.register(
-          params=params_dict,
-          target=trial.outcome
-        )
+        self.register(trial) # update optimizer all by wrapped register so that automatically update total_trials/previous_trials
+        # self.optimizer.register(
+        #   params=params_dict,
+        #   target=trial.outcome
+        # )
       except KeyError:
         logger.warning(
           f"Config already registered, ignoring; config: {params_dict}, outcome: {trial.outcome}"
@@ -79,10 +84,35 @@ class BayesianOptimizer(BaseOptimizer):
       parameter_configs.append(ParameterConfig(parameter=param, value=value))
     return parameter_configs
 
+  def _parameterConfigToString(self, parameter_configs):
+    """
+    transfer parameter configuration into string for hash
+    {A: 10, B: 100} ==> '#A#10#B#100'
+    """
+    cur_config = ''
+    for key, value in ParameterConfig.configsToDict(parameter_configs).items():
+      cur_config += f'#{key}#{value}'
+    return cur_config
+
+  def _update_visited_config(self, parameter_configs):
+    """
+    given a new parameter configuration, update the visited_config dictionary, save key (string) and value (int , index in all_trials)
+    """
+    cur_config = self._parameterConfigToString(parameter_configs)
+    if cur_config in self.visited_config:
+      logger.warning(f'trying to update seen configuration in bayesian_optimizer._update_visited_config, existing one is {self._trialParamsToDict(self.all_trials[self.visited_config[cur_config]])}, new one is {self._parameterConfigsToConfigDict(parameter_configs)}')
+
+    else:
+      self.visited_config[cur_config] = len(self.all_trials) - 1
+
   def _getTrialWithParameterConfigs(self, parameter_configs):
     """Given a list of parameter configs, it returns a trial from previous_trials or None if not found"""
     # TODO: this should check self.previous_trials to find a trial that used the provided configs
     # FIXME: This function is unimplemented, functionally acting like every parameter config is unique
+    cur_config = self._parameterConfigToString(parameter_configs)
+    if cur_config in self.visited_config:
+      logger.warning(f'find existing trial in bayesian_optimizer._getTrialWithParameterConfigs, existing one is {self._trialParamsToDict(self.all_trials[self.visited_config[cur_config]])}, new one is {self._parameterConfigsToConfigDict(parameter_configs)}')
+      return self.all_trials[self.visited_config[cur_config]]
     return None
 
   def _suggestUniqueParameterConfigs(self):
@@ -154,6 +184,9 @@ class BayesianOptimizer(BaseOptimizer):
     the init samples to be truly random. If they have been loaded, we can immediately register
     the result into the model.
     """
+    # save to all trials and update visited_config dictionary
+    self.all_trials.append(trial)
+    self._update_visited_config(self._configDictToParameterConfigs(self._trialParamsToDict(trial)))
     if not self.previous_trials_loaded:
       self.previous_trials.append(trial)
       return
