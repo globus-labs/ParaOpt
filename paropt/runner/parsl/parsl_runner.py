@@ -136,7 +136,7 @@ class ParslRunner:
                 self.storage.saveResult(self.session, trial)
                 self.run_result['success'] = False
                 self.run_result['message'][f'Failed to complete trials, experiment {self.experiment.id} run {self.run_number}:\nError: {e}\n{err_traceback}'] = {config.parameter.name: config.value for config in parameter_configs}
-                logger.exception(err_traceback)
+                logger.exception(f'Config:{self.run_result['message'][f'Failed to complete trials, experiment {self.experiment.id} run {self.run_number}:\nError: {e}\n{err_traceback}']} Error: {err_traceback}')
             
         # except Exception as e:
         #     err_traceback = traceback.format_exc()
