@@ -125,6 +125,7 @@ class ParslRunner:
                 self.optimizer.register(trial)
                 self.run_result['success'] = True and self.run_result['success']
                 self.run_result['message'][f'Successfully completed trials for experiment {self.experiment.id} run {self.run_number}'] = {config.parameter.name: config.value for config in parameter_configs}
+
             except:
                 err_traceback = traceback.format_exc()
                 trial = Trial(
@@ -137,7 +138,7 @@ class ParslRunner:
                 self.run_result['success'] = False
                 self.run_result['message'][f'Failed to complete trials, experiment {self.experiment.id} run {self.run_number}:\nError: {e}\n{err_traceback}'] = {config.parameter.name: config.value for config in parameter_configs}
                 config_dic = {config.parameter.name: config.value for config in parameter_configs}
-                logger.exception(f'Config: {config_dic} Error: {err_traceback}')
+                logger.exception(f'################################Config: {config_dic} Error: {err_traceback}')
             
         # except Exception as e:
         #     err_traceback = traceback.format_exc()
