@@ -28,6 +28,7 @@ class GridSearch(BaseOptimizer):
             else:
                 step_size = (parameter.maximum - parameter.minimum) / (ncpp - 1)
             parameter_linearly_spaced_vals = [parameter.minimum + (i * step_size) for i in range(ncpp)]
+            parameter_linearly_spaced_vals = reversed(parameter_linearly_spaced_vals)
             parameters_linearly_spaced_vals.append(parameter_linearly_spaced_vals)
         
         # get cartesian product of configs
