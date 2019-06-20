@@ -94,14 +94,6 @@ class ParslRunner:
         logger.info(f'Starting ParslRunner with config\n{self}')
         # try:
         for idx, parameter_configs in enumerate(self.optimizer):
-            config_str = ''
-            for config in parameter_configs:
-                config_str += config.parameter.name
-                config_str += ': '
-                config_str += str(config.value)
-            logger.info(f'{idx}')
-            logger.info(config_str)
-            logger.info(f'{parameter_configs}')
             try:
                 logger.info(f'Writing script with configs {parameter_configs}')
                 command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
@@ -132,7 +124,7 @@ class ParslRunner:
                 self.storage.saveResult(self.session, trial)
                 self.optimizer.register(trial)
                 self.run_result['success'] = True and self.run_result['success']
-                self.run_result['message'][f'Successfully completed trials for experiment {self.experiment.id} run {self.run_number}'] = {config.parameter.name: config.value for config in parameter_configs}
+                self.run_result['message'] = (f'Successfully completed trials for experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}')
 
             except:
                 err_traceback = traceback.format_exc()
@@ -144,7 +136,7 @@ class ParslRunner:
                 )
                 self.storage.saveResult(self.session, trial)
                 self.run_result['success'] = False
-                self.run_result['message'][f'Failed to complete trials, experiment {self.experiment.id} run {self.run_number}:\nError: {e}\n{err_traceback}'] = {config.parameter.name: config.value for config in parameter_configs}
+                self.run_result['message'] = (f'Failed to complete trials, experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}:\nError: {e}\n{err_traceback}')
                 # config_dic = {config.parameter.name: config.value for config in parameter_configs}
                 # logger.info(config)
                 logger.exception(err_traceback)
