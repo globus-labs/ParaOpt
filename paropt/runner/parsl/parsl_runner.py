@@ -94,8 +94,12 @@ class ParslRunner:
         logger.info(f'Starting ParslRunner with config\n{self}')
         # try:
         for parameter_configs in self.optimizer:
-            config_dic = {config.parameter.name: config.value for config in parameter_configs}
-            logger.info(config) 
+            config_str = ''
+            for config in parameter_configs:
+                config_str += config.parameter.name
+                config_str += ': '
+                config_str += str(config.value)
+            logger.info(config_str)
             try:
                 logger.info(f'Writing script with configs {parameter_configs}')
                 command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
