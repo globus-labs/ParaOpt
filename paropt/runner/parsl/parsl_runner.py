@@ -94,6 +94,8 @@ class ParslRunner:
         logger.info(f'Starting ParslRunner with config\n{self}')
         # try:
         for parameter_configs in self.optimizer:
+            config_dic = {config.parameter.name: config.value for config in parameter_configs}
+            logger.info(config) 
             try:
                 logger.info(f'Writing script with configs {parameter_configs}')
                 command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
@@ -137,8 +139,8 @@ class ParslRunner:
                 self.storage.saveResult(self.session, trial)
                 self.run_result['success'] = False
                 self.run_result['message'][f'Failed to complete trials, experiment {self.experiment.id} run {self.run_number}:\nError: {e}\n{err_traceback}'] = {config.parameter.name: config.value for config in parameter_configs}
-                config_dic = {config.parameter.name: config.value for config in parameter_configs}
-                logger.info(config)
+                # config_dic = {config.parameter.name: config.value for config in parameter_configs}
+                # logger.info(config)
                 logger.exception(err_traceback)
             
         # except Exception as e:
