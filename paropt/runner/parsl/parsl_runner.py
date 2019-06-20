@@ -93,13 +93,13 @@ class ParslRunner:
         self._dfk = parsl.load(self.parsl_config)
         logger.info(f'Starting ParslRunner with config\n{self}')
         # try:
-        for parameter_configs in self.optimizer:
+        for idx, parameter_configs in enumerate(self.optimizer):
             config_str = ''
             for config in parameter_configs:
                 config_str += config.parameter.name
                 config_str += ': '
                 config_str += str(config.value)
-            print(config_str)
+            logger.info(count)
             logger.info(config_str)
             logger.info(f'{parameter_configs}')
             try:
