@@ -93,6 +93,7 @@ class ParslRunner:
         self._dfk = parsl.load(self.parsl_config)
         logger.info(f'Starting ParslRunner with config\n{self}')
         # try:
+        flag = True
         for idx, parameter_configs in enumerate(self.optimizer):
             try:
                 logger.info(f'Writing script with configs {parameter_configs}')
@@ -124,9 +125,11 @@ class ParslRunner:
                 self.storage.saveResult(self.session, trial)
                 self.optimizer.register(trial)
                 self.run_result['success'] = True and self.run_result['success']
+                flag = flag and self.run_result['success']
                 self.run_result['message'] = (f'Successfully completed trials for experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}')
 
             except:
+                logger.info(f'##################### 1\n')
                 err_traceback = traceback.format_exc()
                 trial = Trial(
                     outcome=f'{err_traceback}',
@@ -134,12 +137,16 @@ class ParslRunner:
                     run_number=self.run_number,
                     experiment_id=self.experiment.id,
                 )
+                logger.info(f'##################### 2\n')
                 self.storage.saveResult(self.session, trial)
+                logger.info(f'##################### 3\n')
                 self.run_result['success'] = False
                 self.run_result['message'] = (f'Failed to complete trials, experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}:\nError: {e}\n{err_traceback}')
                 # config_dic = {config.parameter.name: config.value for config in parameter_configs}
                 # logger.info(config)
+                logger.info(f'##################### 4\n')
                 logger.exception(err_traceback)
+                logger.info(f'##################### 5\n')
             
         # except Exception as e:
         #     err_traceback = traceback.format_exc()
