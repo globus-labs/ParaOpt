@@ -99,7 +99,7 @@ class ParslRunner:
                 config_str += config.parameter.name
                 config_str += ': '
                 config_str += str(config.value)
-            logger.info(count)
+            logger.info(f'{idx}')
             logger.info(config_str)
             logger.info(f'{parameter_configs}')
             try:
