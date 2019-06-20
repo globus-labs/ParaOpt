@@ -128,7 +128,7 @@ class ParslRunner:
                 flag = flag and self.run_result['success']
                 self.run_result['message'] = (f'Successfully completed trials for experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}')
 
-            except:
+            except Exception as e:
                 logger.info(f'##################### 1\n')
                 err_traceback = traceback.format_exc()
                 trial = Trial(
