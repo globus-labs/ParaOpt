@@ -14,14 +14,15 @@ class GridSearch(BaseOptimizer):
         self.num_configs_per_param = num_configs_per_param
         # if self.num_configs_per_param < 2:
         #     raise Exception("num_configs_per_param must be >= 2")
-        if self.num_configs_per_param < 1:
+        if any(self.num_configs_per_param) < 1:
                 raise Exception("num_configs_per_param must be >= 1")
 
     def setExperiment(self, experiment):
         parameters = Parameter.parametersToDict(experiment.parameters)
-        ncpp = self.num_configs_per_param
+        
         parameters_linearly_spaced_vals = []
-        for parameter in experiment.parameters:
+        for idx, parameter in enumerate(experiment.parameters):
+            ncpp = self.num_configs_per_param[idx]
             # step_size = (parameter.maximum - parameter.minimum) / (ncpp - 1)
             if ncpp == 1:
                 step_size = 0
