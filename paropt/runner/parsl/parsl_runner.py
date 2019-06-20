@@ -138,7 +138,7 @@ class ParslRunner:
                 self.run_result['success'] = False
                 self.run_result['message'][f'Failed to complete trials, experiment {self.experiment.id} run {self.run_number}:\nError: {e}\n{err_traceback}'] = {config.parameter.name: config.value for config in parameter_configs}
                 config_dic = {config.parameter.name: config.value for config in parameter_configs}
-                logger.info(f'########the config is {config}')
+                logger.info(config)
                 logger.exception(err_traceback)
             
         # except Exception as e:
