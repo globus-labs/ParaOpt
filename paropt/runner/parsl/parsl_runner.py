@@ -72,7 +72,7 @@ class ParslRunner:
     def _validateResult(self, params, res):
         if res['returncode'] != 0:
             raise Exception(f"Non-zero exit from trial:\n"
-                                            f"    ParameterConfigs: {params}\n    Output: {res['stdout']}")
+                                            f"    ParameterConfigs: {params}\n    Output: {res['stdout']}\n\n\n")
 
     def _writeScript(self, template, parameter_configs, file_prefix):
         """
