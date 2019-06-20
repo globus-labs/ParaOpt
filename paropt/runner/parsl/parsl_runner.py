@@ -72,7 +72,7 @@ class ParslRunner:
     def _validateResult(self, params, res):
         if res['returncode'] != 0:
             raise Exception(f"Non-zero exit from trial:\n"
-                                            f"    ParameterConfigs: {params}\n    Output: {res['stdout']}\n\n\n")
+                                            f"    ParameterConfigs: {params}\n    Output: {res['stdout']}")
 
     def _writeScript(self, template, parameter_configs, file_prefix):
         """
@@ -132,7 +132,7 @@ class ParslRunner:
                 logger.info(f'##################### 1\n')
                 err_traceback = traceback.format_exc()
                 trial = Trial(
-                    outcome=f'{err_traceback}',
+                    outcome=10000000,
                     parameter_configs=parameter_configs,
                     run_number=self.run_number,
                     experiment_id=self.experiment.id,
