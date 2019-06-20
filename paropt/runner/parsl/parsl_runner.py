@@ -101,7 +101,7 @@ class ParslRunner:
                 config_str += str(config.value)
             print(config_str)
             logger.info(config_str)
-            logger.info(parameter_configs)
+            logger.info(f'{parameter_configs}')
             try:
                 logger.info(f'Writing script with configs {parameter_configs}')
                 command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
