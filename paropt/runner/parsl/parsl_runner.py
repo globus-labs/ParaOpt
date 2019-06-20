@@ -99,6 +99,7 @@ class ParslRunner:
                 config_str += config.parameter.name
                 config_str += ': '
                 config_str += str(config.value)
+            print(config_str)
             logger.info(config_str)
             try:
                 logger.info(f'Writing script with configs {parameter_configs}')
