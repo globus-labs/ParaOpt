@@ -126,7 +126,7 @@ class ParslRunner:
                 self.optimizer.register(trial)
                 self.run_result['success'] = True and self.run_result['success']
                 flag = flag and self.run_result['success']
-                self.run_result['message'] = (f'Successfully completed trials for experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}')
+                self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Successfully completed trials {idx} for experiment')
 
             except Exception as e:
                 logger.info(f'##################### 1\n')
@@ -141,7 +141,7 @@ class ParslRunner:
                 self.storage.saveResult(self.session, trial)
                 logger.info(f'##################### 3\n')
                 self.run_result['success'] = False
-                self.run_result['message'] = (f'Failed to complete trials, experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}:\nError: {e}\n{err_traceback}')
+                self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
                 # config_dic = {config.parameter.name: config.value for config in parameter_configs}
                 # logger.info(config)
                 logger.info(f'##################### 4\n')
