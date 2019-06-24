@@ -129,6 +129,10 @@ class ParslRunner:
                 self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Successfully completed trials {idx} for experiment')
 
             except Exception as e:
+                if 'BayesOpt failed to find untested config' in e: # exception is due to cannot find config in bayesopt
+                    err_traceback = traceback.format_exc()
+                    logger.exception(err_traceback)
+                    break
                 logger.info(f'##################### 1\n')
                 err_traceback = traceback.format_exc()
                 trial = Trial(
