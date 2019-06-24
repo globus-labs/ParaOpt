@@ -130,7 +130,7 @@ class ParslRunner:
 
             except Exception as e:
                 if 'BayesOpt failed to find untested config' in e: # exception is due to cannot find config in bayesopt
-                    logger.exception(BayesOpt failed to find untested config)
+                    logger.exception('BayesOpt failed to find untested config')
                     self.run_result['success'] = False
                     err_traceback = traceback.format_exc()
                     logger.exception(err_traceback)
