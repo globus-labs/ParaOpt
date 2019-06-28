@@ -13,6 +13,7 @@ with open('requirements.txt', 'r') as f:
   install_requirements = f.readlines()
 
 for package in install_requirements:
+	print(package)
 	install(package)
 
 setup(
