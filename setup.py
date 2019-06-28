@@ -38,14 +38,14 @@ def get_requirements(remove_links=True):
     if remove_links:
         for requirement in requirements:
         # git repository url.
-        if requirement.startswith("git+"):
-            requirements.remove(requirement)
-        # subversion repository url.
-        if requirement.startswith("svn+"):
-            requirements.remove(requirement)
-        # mercurial repository url.
-        if requirement.startswith("hg+"):
-            requirements.remove(requirement)
+	        if requirement.startswith("git+"):
+	            requirements.remove(requirement)
+	        # subversion repository url.
+	        if requirement.startswith("svn+"):
+	            requirements.remove(requirement)
+	        # mercurial repository url.
+	        if requirement.startswith("hg+"):
+	            requirements.remove(requirement)
     return requirements
 
 
@@ -108,13 +108,13 @@ except FileNotFoundError:
     readme = ""
 
 setup(
-  name = "paropt",
-  version = "0.1.0",
-  author = "Ted Summer",
-  author_email = "ted.summer2@gmail.com",
-  description = ("Automates optimization of tools"),
-  # install_requires=install_requirements,
-  install_requires=get_requirements(),
-  dependency_links=get_links(),
-  packages=find_packages()
+	name = "paropt",
+	version = "0.1.0",
+	author = "Ted Summer",
+	author_email = "ted.summer2@gmail.com",
+	description = ("Automates optimization of tools"),
+	# install_requires=install_requirements,
+	install_requires=get_requirements(),
+	dependency_links=get_links(),
+	packages=find_packages()
 )
