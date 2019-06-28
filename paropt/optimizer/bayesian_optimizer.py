@@ -149,6 +149,7 @@ class BayesianOptimizer(BaseOptimizer):
       n_suggests += 1
 
     if n_suggests == MAX_RETRY_SUGGEST:
+      logger.warning(f'Meet maximum retry suggest {MAX_RETRY_SUGGEST}')
       raise Exception(f"BayesOpt failed to find untested config after {n_suggests} attempts. "
                       f"Consider increasing the utility function kappa value")
     return param_configs
