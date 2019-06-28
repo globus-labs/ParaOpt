@@ -1,20 +1,22 @@
 from setuptools import setup, find_packages
-import pip
+# import pip
+import subprocess
+subprocess.call(["pip", "install", "-r", "requirements.txt"])
 
 
-def install(package):
-    if hasattr(pip, 'main'):
-        pip.main(['install', package])
-    else:
-        pip._internal.main(['install', package])
+# def install(package):
+#     if hasattr(pip, 'main'):
+#         pip.main(['install', package])
+#     else:
+#         pip._internal.main(['install', package])
 
 
-with open('requirements.txt', 'r') as f:
-  install_requirements = f.readlines()
+# with open('requirements.txt', 'r') as f:
+#   install_requirements = f.readlines()
 
-for package in install_requirements:
-	print(package)
-	install(package)
+# for package in install_requirements:
+# 	print(package)
+# 	install(package)
 
 setup(
   name = "paropt",
