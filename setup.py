@@ -81,5 +81,5 @@ setup(
 	# dependency_links=["git+https://github.com/chaofengwu/BayesianOptimization.git"],
 	install_requires=get_requirements(),
 	dependency_links=get_links(),
-	packages=find_packages()
+	# packages=find_packages()
 )
