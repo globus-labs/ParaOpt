@@ -26,6 +26,6 @@ setup(
 	author_email = "ted.summer2@gmail.com",
 	description = ("Automates optimization of tools"),
 	install_requires=install_requirements,
-	dependency_links=https://github.com/chaofengwu/BayesianOptimization.git,
+	dependency_links="https://github.com/chaofengwu/BayesianOptimization.git",
 	packages=find_packages()
 )
