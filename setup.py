@@ -15,8 +15,8 @@ from setuptools import setup, find_packages
 #   install_requirements = f.readlines()
 
 # for package in install_requirements:
-# 	print(package)
-# 	install(package)
+#   print(package)
+#   install(package)
 
 def get_requirements(remove_links=True):
     """
@@ -32,15 +32,15 @@ def get_requirements(remove_links=True):
     if remove_links:
         for requirement in requirements:
         # git repository url.
-	        if requirement.startswith("git+"):
-	            requirements.remove(requirement)
-	        # subversion repository url.
-	        if requirement.startswith("svn+"):
-	            requirements.remove(requirement)
-	        # mercurial repository url.
-	        if requirement.startswith("hg+"):
-	            requirements.remove(requirement)
-	print(requirements)
+            if requirement.startswith("git+"):
+                requirements.remove(requirement)
+            # subversion repository url.
+            if requirement.startswith("svn+"):
+                requirements.remove(requirement)
+            # mercurial repository url.
+            if requirement.startswith("hg+"):
+                requirements.remove(requirement)
+    print(requirements)
     return requirements
 
 
@@ -73,15 +73,15 @@ def get_links():
 
 
 setup(
-	name = "paropt",
-	version = "0.1.0",
-	author = "Ted Summer",
-	author_email = "ted.summer2@gmail.com",
-	description = ("Automates optimization of tools"),
-	# install_requires=install_requirements,
-	# setup_requires=['bayesian-optimization'],
-	# dependency_links=["git+https://github.com/chaofengwu/BayesianOptimization.git"],
-	install_requires=get_requirements(),
-	dependency_links=get_links(),
-	# packages=find_packages()
+    name = "paropt",
+    version = "0.1.0",
+    author = "Ted Summer",
+    author_email = "ted.summer2@gmail.com",
+    description = ("Automates optimization of tools"),
+    # install_requires=install_requirements,
+    # setup_requires=['bayesian-optimization'],
+    # dependency_links=["git+https://github.com/chaofengwu/BayesianOptimization.git"],
+    install_requires=get_requirements(),
+    dependency_links=get_links(),
+    # packages=find_packages()
 )
