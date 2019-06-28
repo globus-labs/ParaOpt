@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 # import pip
 import subprocess
-subprocess.call(["pip3", "install", "-r", "requirements.txt"])
+subprocess.call(["pip", "install", "-r", "requirements.txt"])
 
 
 # def install(package):
