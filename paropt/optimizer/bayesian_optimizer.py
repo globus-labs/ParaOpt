@@ -12,12 +12,13 @@ logger = logging.getLogger(__name__)
 MAX_RETRY_SUGGEST = 10
 
 class BayesianOptimizer(BaseOptimizer):
-  def __init__(self, n_init, n_iter, utility=None):
+  def __init__(self, n_init, n_iter, alpha=1e-6, utility=None):
 # These parameters are initialized by the runner
     # updated by setExperiment()
     self.experiment_id = None
     self.parameters_by_name = None
     self.optimizer = None
+    self.alpha = alpha
     self.previous_trials = []
     
 
@@ -40,6 +41,7 @@ class BayesianOptimizer(BaseOptimizer):
     self.optimizer = BayesianOptimization(
       f=None,
       pbounds=Parameter.parametersToDict(experiment.parameters),
+      alpha=self.alpha,
       verbose=2,
       random_state=randint(1, 100),
     )
