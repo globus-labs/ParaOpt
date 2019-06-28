@@ -40,6 +40,7 @@ def get_requirements(remove_links=True):
 	        # mercurial repository url.
 	        if requirement.startswith("hg+"):
 	            requirements.remove(requirement)
+	print(requirements)
     return requirements
 
 
@@ -66,6 +67,7 @@ def get_links():
                 keep_link = True
             if not keep_link and not already_removed:
                 links_list.remove(link)
+    print(links_list)
     return links_list
 
 
