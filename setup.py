@@ -103,6 +103,8 @@ def install_deps():
     return new_pkgs, links
 
 pkgs, new_links = install_deps()
+print(pkgs)
+print(new_links)
 
 setup(
     name = "paropt",
@@ -117,5 +119,5 @@ setup(
     # dependency_links=get_links(),
     install_requires=pkgs,
     dependency_links=new_links,
-    # packages=find_packages()
+    packages=find_packages()
 )
