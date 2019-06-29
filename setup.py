@@ -119,5 +119,6 @@ setup(
     # dependency_links=get_links(),
     install_requires=pkgs,
     dependency_links=new_links,
-    packages=find_packages()
+    download_url='https://github.com/chaofengwu/paropt',
+    # packages=find_packages()
 )
