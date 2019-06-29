@@ -1,7 +1,10 @@
 from setuptools import setup, find_packages
 # import pip
-# import subprocess
-# subprocess.call(["pip", "install", "-r", "requirements.txt"])
+import subprocess
+try:
+    subprocess.call(["pip", "install", "-r", "requirements.txt"])
+except:
+    subprocess.call(["pip3", "install", "-r", "requirements.txt"])
 
 
 # def install(package):
@@ -70,41 +73,41 @@ from setuptools import setup, find_packages
 #     print(links_list)
 #     return links_list
 
-def install_deps():
-    """Reads requirements.txt and preprocess it
-    to be feed into setuptools.
+# def install_deps():
+#     """Reads requirements.txt and preprocess it
+#     to be feed into setuptools.
 
-    This is the only possible way (we found)
-    how requirements.txt can be reused in setup.py
-    using dependencies from private github repositories.
+#     This is the only possible way (we found)
+#     how requirements.txt can be reused in setup.py
+#     using dependencies from private github repositories.
 
-    Links must be appendend by `-{StringWithAtLeastOneNumber}`
-    or something like that, so e.g. `-9231` works as well as
-    `1.1.0`. This is ignored by the setuptools, but has to be there.
+#     Links must be appendend by `-{StringWithAtLeastOneNumber}`
+#     or something like that, so e.g. `-9231` works as well as
+#     `1.1.0`. This is ignored by the setuptools, but has to be there.
 
-    Warnings:
-        to make pip respect the links, you have to use
-        `--process-dependency-links` switch. So e.g.:
-        `pip install --process-dependency-links {git-url}`
+#     Warnings:
+#         to make pip respect the links, you have to use
+#         `--process-dependency-links` switch. So e.g.:
+#         `pip install --process-dependency-links {git-url}`
 
-    Returns:
-         list of packages and dependency links.
-    """
-    default = open('requirements.txt', 'r').readlines()
-    new_pkgs = []
-    links = []
-    for resource in default:
-        if 'git' in resource:
-            pkg = resource.split('#')[-1]
-            links.append(resource.strip() + '-9876543210')
-            new_pkgs.append(pkg.replace('egg=', '').rstrip())
-        else:
-            new_pkgs.append(resource.strip())
-    return new_pkgs, links
+#     Returns:
+#          list of packages and dependency links.
+#     """
+#     default = open('requirements.txt', 'r').readlines()
+#     new_pkgs = []
+#     links = []
+#     for resource in default:
+#         if 'git' in resource:
+#             pkg = resource.split('#')[-1]
+#             links.append(resource.strip() + '-9876543210')
+#             new_pkgs.append(pkg.replace('egg=', '').rstrip())
+#         else:
+#             new_pkgs.append(resource.strip())
+#     return new_pkgs, links
 
-pkgs, new_links = install_deps()
-print(pkgs)
-print(new_links)
+# pkgs, new_links = install_deps()
+# print(pkgs)
+# print(new_links)
 
 setup(
     name = "paropt",
@@ -117,9 +120,8 @@ setup(
     # dependency_links=["git+https://github.com/chaofengwu/BayesianOptimization.git"],
     # install_requires=get_requirements(),
     # dependency_links=get_links(),
-    install_requires=pkgs,
-    dependency_links=new_links,
-    download_url='https://github.com/chaofengwu/paropt',
-    include_package_data=True,
-    # packages=find_packages()
+    # install_requires=pkgs,
+    # dependency_links=new_links,
+    # download_url='https://github.com/chaofengwu/paropt',
+    packages=find_packages()
 )
