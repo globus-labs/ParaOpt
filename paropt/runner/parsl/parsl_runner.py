@@ -110,8 +110,32 @@ class ParslRunner:
         logger.info(f'Starting ParslRunner with config\n{self}')
 
         flag = True
+        initialize_flag = True
         for idx, parameter_configs in enumerate(self.optimizer):
             try:
+                if initialize_flag:
+                    initialize_flag = False
+                    logger.info(f'Writing initializing script with configs {parameter_configs}')
+                    command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
+                    if self.experiment.setup_template_string != None:
+                        _, setup_script_content = self._writeScript(self.experiment.setup_template_string, parameter_configs, 'setup')
+                    else:
+                        setup_script_content = None
+                    if self.experiment.finish_template_string != None:
+                        _, finish_script_content = self._writeScript(self.experiment.finish_template_string, parameter_configs, 'finish')
+                    else:
+                        finish_script_content = None
+
+                    logger.info(f'Starting initializing trial with script at {command_script_path}')
+                    runConfig = paropt.runner.RunConfig(
+                        command_script_content=command_script_content,
+                        experiment_dict=self.experiment.asdict(),
+                        setup_script_content=setup_script_content,
+                        finish_script_content=finish_script_content,
+                    )
+                    result = self.parsl_app(runConfig).result()
+
+
                 logger.info(f'Writing script with configs {parameter_configs}')
                 command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
                 if self.experiment.setup_template_string != None:
