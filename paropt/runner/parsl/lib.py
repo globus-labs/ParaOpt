@@ -39,12 +39,12 @@ def timeCommand(runConfig):
         res['stdout'] = f'Failed to run setupscript: \n{res["stdout"]}'
         res['run_time'] = 0
         return res
-    else:
-      res = timeScript('setupScript', 'sleep 1')
-      if res['returncode'] != 0:
-        res['stdout'] = f'Failed to run setupscript: \n{res["stdout"]}'
-        res['run_time'] = 0
-        return res
+    # else:
+    #   res = timeScript('setupScript', 'sleep 1')
+    #   if res['returncode'] != 0:
+    #     res['stdout'] = f'Failed to run setupscript: \n{res["stdout"]}'
+    #     res['run_time'] = 0
+    #     return res
     
     # time command script
     res = timeScript('mainScript', runConfig.command_script_content)
