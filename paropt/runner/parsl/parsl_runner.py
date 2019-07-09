@@ -91,8 +91,24 @@ class ParslRunner:
         if debug:
             parsl.set_stream_logger()
         self._dfk = parsl.load(self.parsl_config)
+
+        logger.info(f'setup additional first task (sleep 1) to avoid problem')
+        try:
+            setup_script_content = None
+            finish_script_content = None
+
+            runConfig = paropt.runner.RunConfig(
+                command_script_content='sleep 1',
+                experiment_dict=self.experiment.asdict(),
+                setup_script_content=setup_script_content,
+                finish_script_content=finish_script_content,
+            )
+            result = self.parsl_app(runConfig).result()
+        except:
+            logger.exception(f'error in first task')
+            
         logger.info(f'Starting ParslRunner with config\n{self}')
-        # try:
+
         flag = True
         for idx, parameter_configs in enumerate(self.optimizer):
             try:
