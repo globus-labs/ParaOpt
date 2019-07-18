@@ -42,7 +42,6 @@ def parslConfigFromCompute(compute):
             interchange_port_range=(54051, 54100),
             cores_per_worker=1,
             max_workers=1,
-            worker_logdir_root='runinfo',
             provider=AWSProvider(
               image_id=compute.ami,
               instance_type=compute.instance_model,
