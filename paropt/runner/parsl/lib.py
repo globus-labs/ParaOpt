@@ -108,7 +108,7 @@ def searchMatrix(runConfig):
     try:
         # run setup script
         if runConfig.setup_script_content != None:
-            res = timeScript('setupScript', runConfig.setup_script_content)
+            res = runScript('setupScript', runConfig.setup_script_content)
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run setupscript: \n{res["stdout"]}'
                 res['run_time'] = 0
@@ -121,7 +121,7 @@ def searchMatrix(runConfig):
         #         return res
         
         # time command script
-        res = timeScript('mainScript', runConfig.command_script_content)
+        res = runScript('mainScript', runConfig.command_script_content)
         # make neg b/c our optimizer is maximizing
         # divide by number of seconds in day to scale down for bayes opt
         res['run_time'] = -res['run_time']
@@ -132,7 +132,7 @@ def searchMatrix(runConfig):
 
         # run post script
         if runConfig.finish_script_content != None:
-            res = timeScript('finishScript', runConfig.finish_script_content)
+            res = runScript('finishScript', runConfig.finish_script_content)
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run finish script: \n{res["stdout"]}'
                 res['run_time'] = main_res['run_time']
