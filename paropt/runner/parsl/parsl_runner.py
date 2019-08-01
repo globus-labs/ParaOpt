@@ -92,27 +92,13 @@ class ParslRunner:
             parsl.set_stream_logger()
         self._dfk = parsl.load(self.parsl_config)
 
-        # logger.info(f'setup additional first task (sleep 180) to avoid problem')
-        # try:
-        #     setup_script_content = None
-        #     finish_script_content = None
-
-        #     runConfig = paropt.runner.RunConfig(
-        #         command_script_content='sleep 180',
-        #         experiment_dict=self.experiment.asdict(),
-        #         setup_script_content=setup_script_content,
-        #         finish_script_content=finish_script_content,
-        #     )
-        #     result = self.parsl_app(runConfig).result()
-        # except:
-        #     logger.exception(f'error in first task')
-
         logger.info(f'Starting ParslRunner with config\n{self}')
 
         flag = True
         initialize_flag = True
         for idx, parameter_configs in enumerate(self.optimizer):
             try:
+                # set warm-up experiments 
                 if initialize_flag:
                     initialize_flag = False
                     logger.info(f'Writing initializing script with configs {parameter_configs}')
@@ -169,30 +155,27 @@ class ParslRunner:
                 self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Successfully completed trials {idx} for experiment')
 
             except Exception as e:
-                # if 'BayesOpt failed to find untested config' in e: # exception is due to cannot find config in bayesopt
-                #     logger.exception('BayesOpt failed to find untested config')
-                #     self.run_result['success'] = False
-                #     err_traceback = traceback.format_exc()
-                #     logger.exception(err_traceback)
-                #     break
-                logger.info(f'##################### 1\n')
                 err_traceback = traceback.format_exc()
-                trial = Trial(
-                    outcome=10000000,
-                    parameter_configs=parameter_configs,
-                    run_number=self.run_number,
-                    experiment_id=self.experiment.id,
-                )
-                logger.info(f'##################### 2\n')
+                if result['run_time'] == -1: # for timeCommandLimitTime in lib, timeout
+                    trial = Trial(
+                        outcome=-1,
+                        parameter_configs=parameter_configs,
+                        run_number=self.run_number,
+                        experiment_id=self.experiment.id,
+                    )
+                else:
+                    trial = Trial(
+                        outcome=10000000,
+                        parameter_configs=parameter_configs,
+                        run_number=self.run_number,
+                        experiment_id=self.experiment.id,
+                    )
                 self.storage.saveResult(self.session, trial)
-                logger.info(f'##################### 3\n')
                 self.run_result['success'] = False
                 self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
                 # config_dic = {config.parameter.name: config.value for config in parameter_configs}
                 # logger.info(config)
-                logger.info(f'##################### 4\n')
                 logger.exception(err_traceback)
-                logger.info(f'##################### 5\n')
             
         # except Exception as e:
         #     err_traceback = traceback.format_exc()
