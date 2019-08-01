@@ -16,10 +16,8 @@ class GridSearch(BaseOptimizer):
         self.num_configs_per_param = num_configs_per_param
         # if self.num_configs_per_param < 2:
         #     raise Exception("num_configs_per_param must be >= 2")
-        logger.info(f'##################### 1\n')
         if any(self.num_configs_per_param) < 1:
             raise Exception("num_configs_per_param must be >= 1")
-        logger.info(f'##################### 2\n')
 
     def setExperiment(self, experiment):
         parameters = Parameter.parametersToDict(experiment.parameters)

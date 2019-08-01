@@ -110,7 +110,7 @@ def timeCommandLimitTime(runConfig):
 
             return {'returncode': proc.returncode, 'stdout': outs.decode(), 'run_time': total_time}
         except subprocess.TimeoutExpired:
-            return {'returncode': timeout_returncode, 'stdout': outs.decode(), 'run_time': -1} # run time = -1 means timeout
+            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'run_time': -1} # run time = -1 means timeout
 
 
     try:

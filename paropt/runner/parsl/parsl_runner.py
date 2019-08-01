@@ -156,13 +156,14 @@ class ParslRunner:
 
             except Exception as e:
                 err_traceback = traceback.format_exc()
-                if result['run_time'] == -1: # for timeCommandLimitTime in lib, timeout
+                if result['run_time'] == -1 and result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
                     trial = Trial(
                         outcome=-1,
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
                     )
+                    logger.exception(f'time out')
                 else:
                     trial = Trial(
                         outcome=10000000,
