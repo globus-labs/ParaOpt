@@ -110,7 +110,7 @@ def timeCommandLimitTime(runConfig):
 
             return {'returncode': proc.returncode, 'stdout': outs.decode(), 'run_time': total_time}
         except subprocess.TimeoutExpired:
-            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'run_time': -1} # run time = -1 means timeout
+            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'run_time': timeout} # run time = -1 means timeout
 
 
     try:
@@ -123,6 +123,8 @@ def timeCommandLimitTime(runConfig):
                 return res
 
         res = timeScript('mainScript', runConfig.command_script_content)
+        if res['stdout'] == 'Timeout':
+            return res
         # make neg b/c our optimizer is maximizing
         # divide by number of seconds in day to scale down for bayes opt
         res['run_time'] = -res['run_time'] / 86400
