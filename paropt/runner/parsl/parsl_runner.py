@@ -73,6 +73,9 @@ class ParslRunner:
         if res['returncode'] != 0:
             raise Exception(f"Non-zero exit from trial:\n"
                                             f"    ParameterConfigs: {params}\n    Output: {res['stdout']}")
+        if res['stdout'] == 'Timeout':
+            raise Exception(f"Timeout:\n"
+                                            f"    ParameterConfigs: {params}\n    Output: {res['stdout']}")
 
     def _writeScript(self, template, parameter_configs, file_prefix):
         """
