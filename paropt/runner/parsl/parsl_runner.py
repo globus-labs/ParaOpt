@@ -143,6 +143,7 @@ class ParslRunner:
                     setup_script_content=setup_script_content,
                     finish_script_content=finish_script_content,
                 )
+                result = None
                 result = self.parsl_app(runConfig).result()
                 self._validateResult(parameter_configs, result)
                 trial = Trial(
@@ -159,7 +160,7 @@ class ParslRunner:
 
             except Exception as e:
                 err_traceback = traceback.format_exc()
-                if result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
+                if result is not None and result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
                     trial = Trial(
                         outcome=result['run_time'], # here the runtime is timeout
                         parameter_configs=parameter_configs,
