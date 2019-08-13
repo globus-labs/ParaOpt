@@ -99,6 +99,7 @@ class ParslRunner:
 
         flag = True
         initialize_flag = True
+        result = None
         for idx, parameter_configs in enumerate(self.optimizer):
             try:
                 # set warm-up experiments 
