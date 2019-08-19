@@ -45,7 +45,7 @@ class RandomSearch(BaseOptimizer):
         self.parameters_by_name = None
         self.optimizer = None
         self.previous_trials = []
-
+        self.random_seed = random_seed
         self.n_iter = n_iter
 
         self.n_itered = 0
