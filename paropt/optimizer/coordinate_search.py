@@ -28,6 +28,10 @@ class CoordinateSearchOptimizer():
         self.suggested_queue = None
 
     def suggest(self):
+        if self.max_outcome_parameters is None:
+            suggested_dict = {name: np.random.uniform(low=ran[0], high=ran[1]) for name, ran in self.pbounds.items()}
+            return suggested_dict
+            
         if self.suggested_queue is None or len(self.suggested_queue) == 0:
             # create suggested_queue based on current max_outcome_parameters and cur_dim, update cur_dim and curdim_name
             self.suggested_queue = []
