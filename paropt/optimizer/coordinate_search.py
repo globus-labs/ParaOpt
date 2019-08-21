@@ -24,7 +24,7 @@ class CoordinateSearchOptimizer():
         self.max_outcome_parameters = None
         self.num_dim = len(pbounds.keys())
         self.cur_dim = np.random.randint(self.num_dim)
-        self.cur_dim_name = len(self.pbounds.keys())[self.cur_dim]
+        self.cur_dim_name = list(self.pbounds.keys())[self.cur_dim]
         self.suggested_queue = None
 
     def suggest(self):
@@ -39,7 +39,7 @@ class CoordinateSearchOptimizer():
 
             # suggested_dict = {name: np.random.uniform(low=ran[0], high=ran[1]) for name, ran in self.pbounds.items()}
             self.cur_dim = (self.cur_dim+1) % self.num_dim
-            self.cur_dim_name = len(self.pbounds.keys())[self.cur_dim]
+            self.cur_dim_name = list(self.pbounds.keys())[self.cur_dim]
 
         suggested_dict = self.suggested_queue[0]
         self.suggested_queue = self.suggested_queue[1:]
