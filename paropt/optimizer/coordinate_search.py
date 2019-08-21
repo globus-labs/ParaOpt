@@ -22,9 +22,28 @@ class CoordinateSearchOptimizer():
         self.random_seed = random_seed
         self.max_outcome = -maxsize
         self.max_outcome_parameters = None
+        self.num_dim = len(pbounds.keys())
+        self.cur_dim = np.random.randint(self.num_dim)
+        self.cur_dim_name = len(self.pbounds.keys())[self.cur_dim]
+        self.suggested_queue = None
 
     def suggest(self):
-        suggested_dict = {name: np.random.uniform(low=ran[0], high=ran[1]) for name, ran in self.pbounds.items()}
+        if self.suggested_queue is None or len(self.suggested_queue) == 0:
+            # create suggested_queue based on current max_outcome_parameters and cur_dim, update cur_dim and curdim_name
+            self.suggested_queue = []
+            self.template_dict = {config.parameter.name: config.value for config in self.max_outcome_parameters}
+            for val in range(self.pbounds[self.cur_dim_name][0], self.pbounds[self.cur_dim_name][1] + 1):
+                tmp = template_dict
+                tmp[self.cur_dim_name] = val
+                self.suggested_queue.append(tmp)
+
+            # suggested_dict = {name: np.random.uniform(low=ran[0], high=ran[1]) for name, ran in self.pbounds.items()}
+            self.cur_dim = (self.cur_dim+1) % self.num_dim
+            self.cur_dim_name = len(self.pbounds.keys())[self.cur_dim]
+
+        suggested_dict = self.suggested_queue[0]
+        self.suggested_queue = self.suggested_queue[1:]
+        
         return suggested_dict
 
     def register(self, trial):
@@ -143,32 +162,32 @@ class CoordinateSearch(BaseOptimizer):
                 register the point and get another suggestion
         """
         config_dict = self.optimizer.suggest()
-
-
         param_configs = self._configDictToParameterConfigs(config_dict)
-        trial = self._getTrialWithParameterConfigs(param_configs)
-        n_suggests = 0
-        while trial != None and n_suggests < MAX_RETRY_SUGGEST:
-            logger.info(f"Retrying suggest: Non-unique set of ParameterConfigs: {param_configs}")
-            # This set of configurations have been used before
-            # register a new trail with same outcome but with our suggested (float) values
-            dup_trial = Trial(
-                parameter_configs=param_configs,
-                outcome=trial.outcome,
-                run_number=trial.run_number,
-                experiment_id=trial.experiment_id,
-            )
-            self.register(dup_trial)
-            # get another suggestion from updated model
-            config_dict = self.optimizer.suggest()
-            param_configs = self._configDictToParameterConfigs(config_dict)
-            trial = self._getTrialWithParameterConfigs(param_configs)
-            n_suggests += 1
 
-        if n_suggests == MAX_RETRY_SUGGEST:
-            logger.warning(f'Meet maximum retry suggest {MAX_RETRY_SUGGEST}')
-            raise Exception(f"BayesOpt failed to find untested config after {n_suggests} attempts. "
-                                            f"Consider increasing the utility function kappa value")
+        ### currently do not check visited point
+        # trial = self._getTrialWithParameterConfigs(param_configs)
+        # n_suggests = 0
+        # while trial != None and n_suggests < MAX_RETRY_SUGGEST:
+        #     logger.info(f"Retrying suggest: Non-unique set of ParameterConfigs: {param_configs}")
+        #     # This set of configurations have been used before
+        #     # register a new trail with same outcome but with our suggested (float) values
+        #     dup_trial = Trial(
+        #         parameter_configs=param_configs,
+        #         outcome=trial.outcome,
+        #         run_number=trial.run_number,
+        #         experiment_id=trial.experiment_id,
+        #     )
+        #     self.register(dup_trial)
+        #     # get another suggestion from updated model
+        #     config_dict = self.optimizer.suggest()
+        #     param_configs = self._configDictToParameterConfigs(config_dict)
+        #     trial = self._getTrialWithParameterConfigs(param_configs)
+        #     n_suggests += 1
+
+        # if n_suggests == MAX_RETRY_SUGGEST:
+        #     logger.warning(f'Meet maximum retry suggest {MAX_RETRY_SUGGEST}')
+        #     raise Exception(f"BayesOpt failed to find untested config after {n_suggests} attempts. "
+        #                                     f"Consider increasing the utility function kappa value")
         return param_configs
     
     def _parameterConfigsToConfigDict(self, parameter_configs):
