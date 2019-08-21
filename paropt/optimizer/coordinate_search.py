@@ -59,7 +59,7 @@ class CoordinateSearchOptimizer():
 
 
 class CoordinateSearch(BaseOptimizer):
-    def __init__(self, n_iter=20, random_seed=None):
+    def __init__(self, n_init=1, n_iter=20, random_seed=None):
 # These parameters are initialized by the runner
         # updated by setExperiment()
         self.experiment_id = None
@@ -67,6 +67,7 @@ class CoordinateSearch(BaseOptimizer):
         self.optimizer = None
         self.previous_trials = []
         self.random_seed = random_seed
+        self.n_init = n_init
         self.n_iter = n_iter
 
         self.n_itered = 0
@@ -202,6 +203,10 @@ class CoordinateSearch(BaseOptimizer):
         1. random configs, n_init times
         2. suggested configs, n_iter times (after register configs into model)
         """
+        if self.n_initted < self.n_init:
+            self.n_initted += 1
+            config_dict = self.optimizer.suggest(self.utility)
+            return self._configDictToParameterConfigs(config_dict)
         if not self.previous_trials_loaded:
             self.previous_trials_loaded = True
             self._load()
