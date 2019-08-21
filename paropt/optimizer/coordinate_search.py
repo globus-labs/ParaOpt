@@ -70,6 +70,7 @@ class CoordinateSearch(BaseOptimizer):
         self.n_init = n_init
         self.n_iter = n_iter
 
+        self.n_initted = 0
         self.n_itered = 0
         self.previous_trials_loaded = False
 
