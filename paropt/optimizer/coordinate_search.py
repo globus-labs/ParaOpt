@@ -35,9 +35,8 @@ class CoordinateSearchOptimizer():
         if self.suggested_queue is None or len(self.suggested_queue) == 0:
             # create suggested_queue based on current max_outcome_parameters and cur_dim, update cur_dim and curdim_name
             self.suggested_queue = []
-            template_dict = {config.parameter.name: config.value for config in self.max_outcome_parameters}
             for val in range(self.pbounds[self.cur_dim_name][0], self.pbounds[self.cur_dim_name][1] + 1):
-                tmp = template_dict
+                tmp = {config.parameter.name: config.value for config in self.max_outcome_parameters}
                 tmp[self.cur_dim_name] = val
                 self.suggested_queue.append(tmp)
             logger.info(f'\n###############current suggested_queue: {self.suggested_queue}, \ncur_dim: {self.cur_dim}, \ncur_dim_name: {self.cur_dim_name}')
