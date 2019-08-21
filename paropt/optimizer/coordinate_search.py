@@ -40,7 +40,7 @@ class CoordinateSearchOptimizer():
                 tmp = template_dict
                 tmp[self.cur_dim_name] = val
                 self.suggested_queue.append(tmp)
-            logger.info(f'###############current suggested_queue: {self.suggested_queue}, \ncur_dim: {self.cur_dim}, \ncur_dim_name: {self.cur_dim_name}')
+            logger.info(f'\n###############current suggested_queue: {self.suggested_queue}, \ncur_dim: {self.cur_dim}, \ncur_dim_name: {self.cur_dim_name}')
             # suggested_dict = {name: np.random.uniform(low=ran[0], high=ran[1]) for name, ran in self.pbounds.items()}
             self.cur_dim = (self.cur_dim+1) % self.num_dim
             self.cur_dim_name = list(self.pbounds.keys())[self.cur_dim]
