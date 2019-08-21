@@ -206,7 +206,7 @@ class CoordinateSearch(BaseOptimizer):
         """
         if self.n_initted < self.n_init:
             self.n_initted += 1
-            config_dict = self.optimizer.suggest(self.utility)
+            config_dict = self.optimizer.suggest()
             return self._configDictToParameterConfigs(config_dict)
         if not self.previous_trials_loaded:
             self.previous_trials_loaded = True
