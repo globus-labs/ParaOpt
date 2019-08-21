@@ -31,11 +31,11 @@ class CoordinateSearchOptimizer():
         if self.max_outcome_parameters is None:
             suggested_dict = {name: np.random.uniform(low=ran[0], high=ran[1]) for name, ran in self.pbounds.items()}
             return suggested_dict
-            
+
         if self.suggested_queue is None or len(self.suggested_queue) == 0:
             # create suggested_queue based on current max_outcome_parameters and cur_dim, update cur_dim and curdim_name
             self.suggested_queue = []
-            self.template_dict = {config.parameter.name: config.value for config in self.max_outcome_parameters}
+            template_dict = {config.parameter.name: config.value for config in self.max_outcome_parameters}
             for val in range(self.pbounds[self.cur_dim_name][0], self.pbounds[self.cur_dim_name][1] + 1):
                 tmp = template_dict
                 tmp[self.cur_dim_name] = val
