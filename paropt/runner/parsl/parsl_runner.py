@@ -172,13 +172,13 @@ class ParslRunner:
                     logger.exception(f'\n##############time out2')
                     self.optimizer.register(trial)
                     logger.exception(f'\n##############time out3')
-                    trial = Trial(
-                        outcome=result['run_time'], # here the runtime is timeout
-                        parameter_configs=parameter_configs,
-                        run_number=self.run_number,
-                        experiment_id=self.experiment.id,
-                    )
-                    logger.exception(f'\n##############time out4')
+                    # trial = Trial(
+                    #     outcome=result['run_time'], # here the runtime is timeout
+                    #     parameter_configs=parameter_configs,
+                    #     run_number=self.run_number,
+                    #     experiment_id=self.experiment.id,
+                    # )
+                    # logger.exception(f'\n##############time out4')
                     logger.exception(f'time out')
                     self.storage.saveResult(self.session, trial)
                     logger.exception(f'\n##############time out5')
