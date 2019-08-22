@@ -93,7 +93,7 @@ def timeCommandLimitTime(runConfig):
     import subprocess
     import time
 
-    timeout = 15
+    timeout = 3600
     def timeScript(script_name, script_content):
         """Helper for writing and running a script"""
         script_path = '{}_{}'.format(script_name, time.time())
