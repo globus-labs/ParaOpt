@@ -163,12 +163,23 @@ class ParslRunner:
                 err_traceback = traceback.format_exc()
                 if result is not None and result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
                     trial = Trial(
+                        outcome=-result['run_time']/86400, # here the runtime is timeout
+                        parameter_configs=parameter_configs,
+                        run_number=self.run_number,
+                        experiment_id=self.experiment.id,
+                    )
+                    self.optimizer.register(trial)
+                    trial = Trial(
                         outcome=result['run_time'], # here the runtime is timeout
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
                     )
                     logger.exception(f'time out')
+                    self.storage.saveResult(self.session, trial)
+                    self.run_result['success'] = False
+                    self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
+
                 else:
                     trial = Trial(
                         outcome=10000000,
@@ -176,9 +187,9 @@ class ParslRunner:
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
                     )
-                self.storage.saveResult(self.session, trial)
-                self.run_result['success'] = False
-                self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
+                    self.storage.saveResult(self.session, trial)
+                    self.run_result['success'] = False
+                    self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
                 # config_dic = {config.parameter.name: config.value for config in parameter_configs}
                 # logger.info(config)
                 logger.exception(err_traceback)
