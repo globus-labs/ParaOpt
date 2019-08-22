@@ -162,21 +162,26 @@ class ParslRunner:
             except Exception as e:
                 err_traceback = traceback.format_exc()
                 if result is not None and result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
+                    logger.exception(f'\n##############time out1')
                     trial = Trial(
                         outcome=-result['run_time']/86400, # here the runtime is timeout
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
                     )
+                    logger.exception(f'\n##############time out2')
                     self.optimizer.register(trial)
+                    logger.exception(f'\n##############time out3')
                     trial = Trial(
                         outcome=result['run_time'], # here the runtime is timeout
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
                     )
+                    logger.exception(f'\n##############time out4')
                     logger.exception(f'time out')
                     self.storage.saveResult(self.session, trial)
+                    logger.exception(f'\n##############time out5')
                     self.run_result['success'] = False
                     self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
 
@@ -192,7 +197,7 @@ class ParslRunner:
                     self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
                 # config_dic = {config.parameter.name: config.value for config in parameter_configs}
                 # logger.info(config)
-                logger.exception(err_traceback)
+                # logger.exception(err_traceback)
             
         # except Exception as e:
         #     err_traceback = traceback.format_exc()
