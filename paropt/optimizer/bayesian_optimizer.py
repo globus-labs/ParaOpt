@@ -233,7 +233,7 @@ class BayesianOptimizer(BaseOptimizer):
             self.previous_trials.append(trial)
             return
         
-        if using_budget_flag and self.budget is not None:
+        if self.using_budget_flag and self.budget is not None:
             return_code = self._update_budget(trial)
             if return_code == -1:
                 self.stop_flag = True
