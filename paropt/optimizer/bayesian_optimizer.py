@@ -142,6 +142,7 @@ class BayesianOptimizer(BaseOptimizer):
         trial = self._getTrialWithParameterConfigs(param_configs)
         n_suggests = 0
         while trial != None and n_suggests < MAX_RETRY_SUGGEST:
+            self.using_budget_flag = False
             logger.info(f"Retrying suggest: Non-unique set of ParameterConfigs: {param_configs}")
             # This set of configurations have been used before
             # register a new trail with same outcome but with our suggested (float) values
@@ -162,6 +163,7 @@ class BayesianOptimizer(BaseOptimizer):
             logger.warning(f'Meet maximum retry suggest {MAX_RETRY_SUGGEST}')
             raise Exception(f"BayesOpt failed to find untested config after {n_suggests} attempts. "
                                             f"Consider increasing the utility function kappa value")
+        self.using_budget_flag = True
         return param_configs
     
     def _parameterConfigsToConfigDict(self, parameter_configs):
@@ -243,7 +245,7 @@ class BayesianOptimizer(BaseOptimizer):
                 self.stop_flag = True
 
         if self.using_converge_flag and self.converge_thres is not None and self.converge_step is not None:
-            return_code = slef._update_converge(trial)
+            return_code = self._update_converge(trial)
             if return_code == -1:
                 self.stop_flag = True
 
