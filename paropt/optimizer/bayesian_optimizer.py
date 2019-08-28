@@ -178,28 +178,27 @@ class BayesianOptimizer(BaseOptimizer):
         """
         if self.stop_flag:
             raise StopIteration
-            return None
-
-        if self.n_initted < self.n_init:
-            self.n_initted += 1
-            config_dict = self.optimizer.suggest(self.utility)
-            next_config = self._configDictToParameterConfigs(config_dict)
-            self.using_budget_flag = True
-            self.using_converge_flag = False
-            return next_config
-        if not self.previous_trials_loaded:
-            self.using_budget_flag = False
-            self.using_converge_flag = False
-            self.previous_trials_loaded = True
-            self._load()
-        if self.n_itered < self.n_iter:
-            self.n_itered += 1
-            next_config = self._suggestUniqueParameterConfigs()
-            self.using_budget_flag = True
-            self.using_converge_flag = True
-            return next_config
         else:
-            raise StopIteration
+            if self.n_initted < self.n_init:
+                self.n_initted += 1
+                config_dict = self.optimizer.suggest(self.utility)
+                next_config = self._configDictToParameterConfigs(config_dict)
+                self.using_budget_flag = True
+                self.using_converge_flag = False
+                return next_config
+            if not self.previous_trials_loaded:
+                self.using_budget_flag = False
+                self.using_converge_flag = False
+                self.previous_trials_loaded = True
+                self._load()
+            if self.n_itered < self.n_iter:
+                self.n_itered += 1
+                next_config = self._suggestUniqueParameterConfigs()
+                self.using_budget_flag = True
+                self.using_converge_flag = True
+                return next_config
+            else:
+                raise StopIteration
     
 
     def _update_converge(self, trial):
