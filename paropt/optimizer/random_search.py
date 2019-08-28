@@ -253,11 +253,11 @@ class RandomSearch(BaseOptimizer):
             if return_code == -1:
                 self.stop_flag = True
 
-                
+
         if not self.previous_trials_loaded:
             self.previous_trials.append(trial)
             return
         self.optimizer.register(trial)
 
     def getMax(self):
-        return self.max_outcome_parameters, self.max_outcome
+        return self.optimizer.max_outcome_parameters, self.optimizer.max_outcome
