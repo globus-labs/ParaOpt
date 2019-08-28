@@ -184,10 +184,12 @@ class BayesianOptimizer(BaseOptimizer):
             self.n_initted += 1
             config_dict = self.optimizer.suggest(self.utility)
             next_config = self._configDictToParameterConfigs(config_dict)
-            self.using_budget_flag = False
+            self.using_budget_flag = True
+            self.using_converge_flag = False
             return next_config
         if not self.previous_trials_loaded:
             self.using_budget_flag = False
+            self.using_converge_flag = False
             self.previous_trials_loaded = True
             self._load()
         if self.n_itered < self.n_iter:
