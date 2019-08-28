@@ -214,8 +214,8 @@ class BayesianOptimizer(BaseOptimizer):
             return 0
 
 
-    def _update_budget(self):
-        self.budget -= -self.all_trials[-1].outcome*86400 # count in second
+    def _update_budget(self, trial):
+        self.budget -= -trial.outcome*86400 # count in second
         if self.budget <= 0:
             logger.exception(f'Reach budget')
             return -1
@@ -237,7 +237,7 @@ class BayesianOptimizer(BaseOptimizer):
             return
         
         if self.using_budget_flag and self.budget is not None:
-            return_code = self._update_budget()
+            return_code = self._update_budget(trial)
             if return_code == -1:
                 self.stop_flag = True
 
