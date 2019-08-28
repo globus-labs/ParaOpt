@@ -17,8 +17,15 @@ class BayesianOptimizer(BaseOptimizer):
         # updated by setExperiment()
         
         self.optimizer = None
-        self.alpha = alpha
-        self.kappa = kappa
+        if alpha is None:
+            self.alpha = 1e-6
+        else:
+            self.alpha = alpha
+        if kappa is None:
+            self.kappa = 2.5
+        else:
+            self.kappa = kappa
+            
         self.utility = utility if utility != None else UtilityFunction(kind="ucb", kappa=self.kappa, xi=0.0)
 
         self.experiment_id = None
