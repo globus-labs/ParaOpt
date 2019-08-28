@@ -205,7 +205,7 @@ class BayesianOptimizer(BaseOptimizer):
 
     def _update_converge(self, trial):
         best_param, best_out = self.getMax()
-        if trial.outcome / best_out <= self.converge_thres:
+        if trial.outcome / float(best_out) <= self.converge_thres:
             self.converge_step_count = 0
         else:
             self.converge_step_count += 1
