@@ -207,6 +207,7 @@ class BayesianOptimizer(BaseOptimizer):
             self.converge_step_count += 1
         
         if self.converge_step_count >= self.converge_step:
+            logger.exception(f'Meet creteria of converging')
             return -1
         else:
             return 0
@@ -215,6 +216,7 @@ class BayesianOptimizer(BaseOptimizer):
     def _update_budget(self):
         self.budget -= -self.all_trials[-1].outcome*86400 # count in second
         if self.budget <= 0:
+            logger.exception(f'Reach budget')
             return -1
         else:
             return 0
@@ -234,12 +236,12 @@ class BayesianOptimizer(BaseOptimizer):
             return
         
         if self.using_budget_flag and self.budget is not None:
-            return_code = self._update_budget(trial)
+            return_code = self._update_budget()
             if return_code == -1:
                 self.stop_flag = True
 
         if self.using_converge_flag and self.converge_thres is not None and self.converge_step is not None:
-            return_code = slef._update_converge()
+            return_code = slef._update_converge(trial)
             if return_code == -1:
                 self.stop_flag = True
 
