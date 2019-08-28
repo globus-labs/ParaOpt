@@ -20,6 +20,8 @@ class CoordinateSearchOptimizer():
     def __init__(self, pbounds, random_seed=None):
         self.pbounds = pbounds
         self.random_seed = random_seed
+        if self.random_seed is not None:
+            np.random.seed = self.random_seed
         self.max_outcome = -maxsize
         self.max_outcome_parameters = None
         self.num_dim = len(pbounds.keys())
@@ -62,7 +64,7 @@ class CoordinateSearchOptimizer():
 
 
 class CoordinateSearch(BaseOptimizer):
-    def __init__(self, n_init=1, n_iter=20, random_seed=None, budget=None, converge_thres=None, converge_step=None):
+    def __init__(self, n_init=1, n_iter=20, random_seed=None, budget=None, converge_thres=None, converge_steps=None):
 # These parameters are initialized by the runner
         # updated by setExperiment()
         self.optimizer = None
@@ -74,8 +76,8 @@ class CoordinateSearch(BaseOptimizer):
         self.n_iter = n_iter
         self.budget = budget
         self.converge_thres = converge_thres
-        self.converge_step = converge_step
-        self.converge_step_count = 0
+        self.converge_steps = converge_steps
+        self.converge_steps_count = 0
         self.stop_flag = False
 
         self.using_budget_flag = False # check whether the current trial use budget
@@ -244,11 +246,11 @@ class CoordinateSearch(BaseOptimizer):
     def _update_converge(self, trial):
         best_out_param, best_out = self.getMax()
         if trial.outcome / float(best_out) <= self.converge_thres:
-            self.converge_step_count = 0
+            self.converge_steps_count = 0
         else:
-            self.converge_step_count += 1
+            self.converge_steps_count += 1
         
-        if self.converge_step_count >= self.converge_step:
+        if self.converge_steps_count >= self.converge_steps:
             logger.exception(f'Meet creteria of converging')
             return -1
         else:
@@ -279,7 +281,7 @@ class CoordinateSearch(BaseOptimizer):
             if return_code == -1:
                 self.stop_flag = True
 
-        if self.using_converge_flag and self.converge_thres is not None and self.converge_step is not None:
+        if self.using_converge_flag and self.converge_thres is not None and self.converge_steps is not None:
             return_code = self._update_converge(trial)
             if return_code == -1:
                 self.stop_flag = True

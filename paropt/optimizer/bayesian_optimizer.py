@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 MAX_RETRY_SUGGEST = 10
 
 class BayesianOptimizer(BaseOptimizer):
-    def __init__(self, n_init, n_iter, alpha=1e-6, kappa=2.5, utility=None, budget=None, converge_thres=None, converge_step=None):
+    def __init__(self, n_init, n_iter, alpha=1e-6, kappa=2.5, utility=None, budget=None, converge_thres=None, converge_steps=None):
 # These parameters are initialized by the runner
         # updated by setExperiment()
         
@@ -34,8 +34,8 @@ class BayesianOptimizer(BaseOptimizer):
         self.n_iter = n_iter
         self.budget = budget
         self.converge_thres = converge_thres
-        self.converge_step = converge_step
-        self.converge_step_count = 0
+        self.converge_steps = converge_steps
+        self.converge_steps_count = 0
         self.stop_flag = False
 
         self.using_budget_flag = False # check whether the current trial use budget
@@ -213,11 +213,11 @@ class BayesianOptimizer(BaseOptimizer):
     def _update_converge(self, trial):
         best_out = self.getMax()
         if trial.outcome / float(best_out['target']) <= self.converge_thres:
-            self.converge_step_count = 0
+            self.converge_steps_count = 0
         else:
-            self.converge_step_count += 1
+            self.converge_steps_count += 1
         
-        if self.converge_step_count >= self.converge_step:
+        if self.converge_steps_count >= self.converge_steps:
             logger.exception(f'Meet creteria of converging')
             return -1
         else:
@@ -249,7 +249,7 @@ class BayesianOptimizer(BaseOptimizer):
             if return_code == -1:
                 self.stop_flag = True
 
-        if self.using_converge_flag and self.converge_thres is not None and self.converge_step is not None:
+        if self.using_converge_flag and self.converge_thres is not None and self.converge_steps is not None:
             return_code = self._update_converge(trial)
             if return_code == -1:
                 self.stop_flag = True
