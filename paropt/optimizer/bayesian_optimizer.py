@@ -32,6 +32,7 @@ class BayesianOptimizer(BaseOptimizer):
         self.stop_flag = False
 
         self.using_budget_flag = False # check whether the current trial use budget
+        self.using_converge_flag = False # check whether the current tirl need to consider in convergence
         self.previous_trials = []
         self.n_initted = 0
         self.n_itered = 0
@@ -192,6 +193,7 @@ class BayesianOptimizer(BaseOptimizer):
             self.n_itered += 1
             next_config = self._suggestUniqueParameterConfigs()
             self.using_budget_flag = True
+            self.using_converge_flag = True
             return next_config
         else:
             raise StopIteration
@@ -236,7 +238,7 @@ class BayesianOptimizer(BaseOptimizer):
             if return_code == -1:
                 self.stop_flag = True
 
-        if using_converge_flag and self.converge_thres is not None and self.converge_step is not None:
+        if self.using_converge_flag and self.converge_thres is not None and self.converge_step is not None:
             return_code = slef._update_converge()
             if return_code == -1:
                 self.stop_flag = True
