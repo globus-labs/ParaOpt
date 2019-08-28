@@ -178,6 +178,7 @@ class BayesianOptimizer(BaseOptimizer):
         """
         if self.stop_flag:
             raise StopIteration
+            return None
 
         if self.n_initted < self.n_init:
             self.n_initted += 1
