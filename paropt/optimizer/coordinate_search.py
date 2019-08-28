@@ -70,7 +70,7 @@ class CoordinateSearch(BaseOptimizer):
 
         self.experiment_id = None
         self.parameters_by_name = None
-        self.n_init = n_init
+        self.n_init = n_init # current only 1 works
         self.n_iter = n_iter
         self.budget = budget
         self.converge_thres = converge_thres
@@ -221,7 +221,7 @@ class CoordinateSearch(BaseOptimizer):
         else:
             if self.n_initted < self.n_init:
                 self.n_initted += 1
-                config_dict = self.optimizer.suggest(self.utility)
+                config_dict = self.optimizer.suggest()
                 next_config = self._configDictToParameterConfigs(config_dict)
                 self.using_budget_flag = True
                 self.using_converge_flag = False
@@ -283,7 +283,7 @@ class CoordinateSearch(BaseOptimizer):
             return_code = self._update_converge(trial)
             if return_code == -1:
                 self.stop_flag = True
-                
+
         if not self.previous_trials_loaded:
             self.previous_trials.append(trial)
             return
