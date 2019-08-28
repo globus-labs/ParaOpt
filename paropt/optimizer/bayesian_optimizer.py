@@ -235,9 +235,7 @@ class BayesianOptimizer(BaseOptimizer):
         # save to all trials and update visited_config dictionary
         self.all_trials.append(trial)
         self._update_visited_config(self._configDictToParameterConfigs(self._trialParamsToDict(trial)))
-        if not self.previous_trials_loaded:
-            self.previous_trials.append(trial)
-            return
+        
         
         if self.using_budget_flag and self.budget is not None:
             return_code = self._update_budget(trial)
@@ -249,6 +247,9 @@ class BayesianOptimizer(BaseOptimizer):
             if return_code == -1:
                 self.stop_flag = True
 
+        if not self.previous_trials_loaded:
+            self.previous_trials.append(trial)
+            return
         self.optimizer.register(
             params=self._parameterConfigsToConfigDict(trial.parameter_configs),
             target=trial.outcome,
