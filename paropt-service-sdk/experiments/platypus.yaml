@@ -1,0 +1,28 @@
+tool_name: platypus
+parameters:
+- name: nCPU
+  type: int
+  minimum: 4
+  maximum: 16
+- name: bufferSize
+  type: int
+  minimum: 100000
+  maximum: 400000
+compute:
+  type: ec2
+  instance_model: c5.4xlarge
+  instance_family: c5
+  ami: ami-073e3f122e47832bf
+command_template_string: |
+  bam="/home/ubuntu/data/chr21.bam"
+  ref="/home/ubuntu/data/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fna"
+
+  vcf="${HOME}/results/chr21platypus.vcf.gz"
+
+  # see here for configs:
+  # https://www.well.ox.ac.uk/research/research-groups/lunter-group/softwares/platypus-documentation
+
+  echo "Loading platypus env"
+  source activate platypus_py27
+  echo "Starting platypus..."
+  platypus callVariants --bamFiles=${bam} --refFile=${ref} --output=${vcf} --nCPU ${nCPU} --bufferSize ${bufferSize}

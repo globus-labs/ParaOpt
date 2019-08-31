@@ -1,0 +1,34 @@
+tool_name: awsExample
+parameters:
+- name: paramA
+  type: int
+  minimum: 1
+  maximum: 10
+- name: paramB
+  type: int
+  minimum: 1
+  maximum: 10
+  #- name: paramC
+  #  type: int
+  #  minimum: 1
+  #  maximum: 10
+# use ec2 compute
+compute:
+  type: ec2
+  instance_model: c5.2xlarge
+  instance_family: c5
+  ami: ami-048fd10984c33048b
+setup_template_string: |
+  #!/bin/bash
+  echo "Doing setup..."
+  sleep 2
+command_template_string: |
+  #!/bin/bash
+  #  echo "Sleeping for ${paramA} + ${paramB} + ${paramC} seconds!"
+  #  sleep $(( ${paramA} + ${paramB})) + ${paramC} ))
+  echo "Sleeping for ${paramA} + ${paramB} seconds!"
+  sleep $(( ${paramA} + ${paramB})) ))
+finish_template_string: |
+  #!/bin/bash
+  echo "Running teardown..."
+  sleep 2
