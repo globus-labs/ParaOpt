@@ -1,0 +1,2 @@
+problem:
+	if the experiment is stopped due to meeting bayesian max retry, the instance will not be terminated

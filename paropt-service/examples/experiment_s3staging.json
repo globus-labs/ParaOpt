@@ -1,0 +1,25 @@
+{
+	"tool_name": "s3example",
+	"parameters": [
+		{
+			"name": "paramA",
+			"type": "int",
+			"minimum": 1,
+			"maximum": 10
+		},
+		{
+			"name": "paramB",
+			"type": "int",
+			"minimum": 1,
+			"maximum": 10
+		}
+	],
+	"compute": {
+		"type": "ec2",
+		"instance_model": "t2.micro",
+		"instance_family": "t2",
+		"ami": "ami-019be50b16f6c9f4d"
+	},
+	"command_template_string": "#!/bin/bash\necho \"File fetched from s3:\"\ncat MyTest.txt\necho \"Sleeping for ${paramA} + ${paramB} seconds\"\nsleep $(( ${paramA} + ${paramB} ))\n",
+	"setup_template_string": "#!/bin/bash\necho \"Fetching file from s3...\"\n/home/ubuntu/miniconda2/bin/aws s3 cp s3://paropt-testbucket1/MyTest.txt ./\n"
+}

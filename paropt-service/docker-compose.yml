@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  web:
+    build: .
+    image: paropt-service
+    container_name: web
+    ports:
+      - '8080:8080'
+    command: >
+      bash -c "source activate paroptservice_py367 && python paropt_service/app.py --server"
+    depends_on:
+      - redis
+  
+  worker:
+    image: paropt-service
+    ports:
+      - '54000-54100:54000-54100'
+    command: >
+      bash -c "source activate paroptservice_py367 &&
+               python paropt_service/app.py --workers ${REDIS_WORKERS:-2}"
+    volumes:
+      - ${PAROPT_HOST_LOGS:?err}:/var/log/paropt
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:4.0.11-alpine

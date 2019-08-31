@@ -1,0 +1,6 @@
+{
+  "optimizer": {
+    "type": "grid",
+    "num_configs_per_param": [2, 2]
+  }
+}
