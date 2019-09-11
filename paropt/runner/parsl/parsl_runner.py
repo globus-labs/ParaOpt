@@ -24,6 +24,7 @@ class ParslRunner:
                 logs_root_dir='.'):
 
         self.obj_func = obj_func
+        self.obj_func_params = obj_func_params
         self._dfk = None
         self.optimizer = optimizer
         self.storage = storage if storage != None else LocalFile()
@@ -124,7 +125,7 @@ class ParslRunner:
                         setup_script_content=setup_script_content,
                         finish_script_content=finish_script_content,
                     )
-                    result = self.obj_func(runConfig, **obj_func_params).result()
+                    result = self.obj_func(runConfig, **self.obj_func_params).result()
 
 
                 logger.info(f'Writing script with configs {parameter_configs}')
@@ -146,7 +147,7 @@ class ParslRunner:
                     finish_script_content=finish_script_content,
                 )
                 result = None
-                result = self.obj_func(runConfig, **obj_func_params).result()
+                result = self.obj_func(runConfig, **self.obj_func_params).result()
                 self._validateResult(parameter_configs, result)
                 trial = Trial(
                     outcome=result['run_time'],
