@@ -381,8 +381,8 @@ class ParoptManager():
     )
 
     po = ParslRunner(
-      parsl_app=timeCmd,
-      # parsl_app=timeCmdLimit,
+      obj_func=timeCmd,
+      # obj_func=timeCmdLimit,
       optimizer=optimizer,
       storage=storage,
       experiment=experiment,

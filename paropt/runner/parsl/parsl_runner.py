@@ -16,13 +16,14 @@ logger = logging.getLogger(__name__)
 
 class ParslRunner:
     def __init__(self,
-                            parsl_app,
-                            optimizer,
-                            storage=None,
-                            experiment=None,
-                            logs_root_dir='.'):
+                obj_func,
+                obj_func_params, 
+                optimizer,
+                storage=None,
+                experiment=None,
+                logs_root_dir='.'):
 
-        self.parsl_app = parsl_app
+        self.obj_func = obj_func
         self._dfk = None
         self.optimizer = optimizer
         self.storage = storage if storage != None else LocalFile()
@@ -62,7 +63,7 @@ class ParslRunner:
     def __repr__(self):
         return '\n'.join([
             f'ParslRunner(',
-            f'    parsl_app={self.parsl_app!r}',
+            f'    obj_func={self.obj_func!r}',
             f'    optimizer={self.optimizer!r}',
             f'    storage={self.storage!r}',
             f'    experiment={self.experiment!r}',
@@ -123,7 +124,7 @@ class ParslRunner:
                         setup_script_content=setup_script_content,
                         finish_script_content=finish_script_content,
                     )
-                    result = self.parsl_app(runConfig).result()
+                    result = self.obj_func(runConfig).result()
 
 
                 logger.info(f'Writing script with configs {parameter_configs}')
@@ -145,7 +146,7 @@ class ParslRunner:
                     finish_script_content=finish_script_content,
                 )
                 result = None
-                result = self.parsl_app(runConfig).result()
+                result = self.obj_func(runConfig).result()
                 self._validateResult(parameter_configs, result)
                 trial = Trial(
                     outcome=result['run_time'],
