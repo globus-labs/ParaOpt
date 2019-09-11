@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 class ParslRunner:
     def __init__(self,
                 obj_func,
-                obj_func_params, 
                 optimizer,
+                obj_func_params=None, 
                 storage=None,
                 experiment=None,
                 logs_root_dir='.'):
