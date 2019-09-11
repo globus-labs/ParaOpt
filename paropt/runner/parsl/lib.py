@@ -24,7 +24,7 @@ def timeCommand(runConfig, **kwargs):
     if 'timeout' in kwargs:
         timeout = kwargs['timeout']
     else:
-        timeout = max(sys.maxint)
+        timeout = sys.maxsize
     def timeScript(script_name, script_content):
         """Helper for writing and running a script"""
         script_path = '{}_{}'.format(script_name, time.time())
