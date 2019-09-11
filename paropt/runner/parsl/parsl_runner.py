@@ -124,7 +124,7 @@ class ParslRunner:
                         setup_script_content=setup_script_content,
                         finish_script_content=finish_script_content,
                     )
-                    result = self.obj_func(runConfig).result()
+                    result = self.obj_func(runConfig, **obj_func_params).result()
 
 
                 logger.info(f'Writing script with configs {parameter_configs}')
@@ -146,7 +146,7 @@ class ParslRunner:
                     finish_script_content=finish_script_content,
                 )
                 result = None
-                result = self.obj_func(runConfig).result()
+                result = self.obj_func(runConfig, **obj_func_params).result()
                 self._validateResult(parameter_configs, result)
                 trial = Trial(
                     outcome=result['run_time'],
