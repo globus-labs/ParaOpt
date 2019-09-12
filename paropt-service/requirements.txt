@@ -3,7 +3,7 @@ globus-sdk
 psycopg2-binary==2.8.1
 pyopenssl
 parsl[aws]==0.8.0
-git+https://git@github.com/chaofengwu/paropt
+git+https://git@github.com/globus-labs/ParaOpt@Chaofeng_modification
 redis>=3.2.1
 # Using patched rq - a worker queue is broken in current release
 # Update when next version is released (patch has been merged on github)
