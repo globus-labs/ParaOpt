@@ -45,7 +45,7 @@ def parslConfigFromCompute(compute):
             provider=AWSProvider(
               image_id=compute.ami,
               instance_type=compute.instance_model,
-              worker_init='pip3 install git+https://git@github.com/chaofengwu/paropt',#git+https://git@github.com/macintoshpie/paropt',
+              worker_init='pip3 install git+https://git@github.com/globus-labs/ParaOpt@Chaofeng_modification', # git+https://git@github.com/chaofengwu/paropt',#git+https://git@github.com/macintoshpie/paropt',
               nodes_per_block=1,
               init_blocks=1,
               max_blocks=1,
