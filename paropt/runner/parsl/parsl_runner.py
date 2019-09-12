@@ -175,7 +175,7 @@ class ParslRunner:
                 if result is not None and result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
                     # logger.exception(f'\n##############time out1')
                     trial = Trial(
-                        outcome=-result['run_time']
+                        outcome=-result['run_time'],
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
