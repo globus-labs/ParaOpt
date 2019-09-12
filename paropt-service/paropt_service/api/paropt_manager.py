@@ -156,6 +156,7 @@ class ParoptManager():
             return {'status': 'failed', 'message': "Experiment not found with id {}".format(id)}
         
         optimizer = getOptimizer(run_config.get('optimizer'))
+        obj_config = getObjective(run_config.get('objective'))
         if optimizer == None:
             tmp = run_config.get('optimizer')
             return {'status': 'failed', 'message': f'Invalid run configuration provided {tmp}, code: {optimizer[1]}'}
@@ -165,7 +166,7 @@ class ParoptManager():
             q = Queue()
             job = q.enqueue(
                 f=cls._startRunner,
-                args=(experiment, optimizer),
+                args=(experiment, optimizer, obj_config),
                 result_ttl=3600,
                 job_timeout=-1,
                 ttl=-1,
@@ -350,7 +351,7 @@ class ParoptManager():
         return {'message': 'this functionality is not implemented yet'}
 
     @classmethod
-    def _startRunner(cls, experiment_dict, optimizer):
+    def _startRunner(cls, experiment_dict, optimizer, obj_config):
         """Runs an experiment with paropt. This is the function used for job queueing
 
         Args:
@@ -375,9 +376,10 @@ class ParoptManager():
         )
 
         po = ParslRunner(
-            obj_func=timeCmd,
+            obj_func=obj_func['obj_name'],
             # obj_func=timeCmdLimit,
             optimizer=optimizer,
+            obj_func_params=obj_config['obj_params'], 
             storage=storage,
             experiment=experiment,
             logs_root_dir='/var/log/paropt')
