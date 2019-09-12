@@ -1,11 +1,11 @@
 ## Paropt
 Paropt enables automating the process of finding optimal tool configurations using [Parsl](https://github.com/Parsl/parsl) and [BayesianOptimization](https://github.com/fmfn/BayesianOptimization).
 
-See [paropt-service](https://github.com/macintoshpie/paropt-service) for using this package in a RESTful API to launch optimization tasks.
+See [paropt-service](https://github.com/globus-labs/ParaOpt/paropt-service) for using this package in a RESTful API to launch optimization tasks.
 
 ### Setup
 ```bash
-pip install git+https://git@github.com/macintoshpie/paropt
+pip install git+https://git@github.com/globus-labs/ParaOpt
 ```
 
 ### Usage

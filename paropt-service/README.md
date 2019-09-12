@@ -1,5 +1,5 @@
 ### tldr;
-RESTful service for automating optimization of arbitrary tools. See [paropt](https://github.com/macintoshpie/paropt) for the standalone python package for automated optimization, and [paropt-service-sdk](https://github.com/macintoshpie/paropt-service-sdk) for a python wrapper for HTTP requests to this service.
+RESTful service for automating optimization of arbitrary tools. See [paropt](https://github.com/globus-labs/ParaOpt) for the standalone python package for automated optimization, and [paropt-service-sdk](https://github.com/globus-labs/ParaOpt/paropt-service-sdk) for a python wrapper for HTTP requests to this service.
 
 ## Setup
 To run the service, clone this repo then setup your environment variable file. If running on AWS, create the file `config/.env.prod`, and if running locally, configure `config/.env.dev`. The file `config/.example.env` shows the required environment variables and what they are used for.  
