@@ -376,7 +376,7 @@ class ParoptManager():
         )
 
         po = ParslRunner(
-            obj_func=obj_func['obj_name'],
+            obj_func=obj_config['obj_name'],
             # obj_func=timeCmdLimit,
             optimizer=optimizer,
             obj_func_params=obj_config['obj_params'], 
