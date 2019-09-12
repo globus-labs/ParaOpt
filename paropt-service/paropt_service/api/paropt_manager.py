@@ -108,7 +108,8 @@ def getObjective(obj_config):
     if obj_config is None:
         return obj_info
     else:
-        obj_info['obj_name'] = getattr(paropt.runner.parsl, get_from_dic(obj_config, 'obj_name'))
+        # obj_info['obj_name'] = getattr(paropt.runner.parsl, get_from_dic(obj_config, 'obj_name'))
+        obj_info['obj_name'] = get_from_dic(obj_config, 'obj_name')
         obj_info['obj_params'] = get_from_dic(obj_config, 'obj_params')
         if 'timeout' in obj_info['obj_params'].keys():
             obj_info['obj_params']['timeout'] = int(obj_info['obj_params']['timeout'])
@@ -378,7 +379,7 @@ class ParoptManager():
         )
 
         po = ParslRunner(
-            obj_func=obj_config['obj_name'],
+            obj_func=getattr(paropt.runner.parsl, obj_config['obj_name']),
             # obj_func=timeCmdLimit,
             optimizer=optimizer,
             obj_func_params=obj_config['obj_params'], 
