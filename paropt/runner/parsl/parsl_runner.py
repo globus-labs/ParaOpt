@@ -115,16 +115,6 @@ class ParslRunner:
                 # set warm-up experiments 
                 if initialize_flag:
                     initialize_flag = False
-                    # logger.info(f'Writing initializing script with configs {parameter_configs}')
-                    # command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
-                    # if self.experiment.setup_template_string != None:
-                    #     _, setup_script_content = self._writeScript(self.experiment.setup_template_string, parameter_configs, 'setup')
-                    # else:
-                    #     setup_script_content = None
-                    # if self.experiment.finish_template_string != None:
-                    #     _, finish_script_content = self._writeScript(self.experiment.finish_template_string, parameter_configs, 'finish')
-                    # else:
-                    #     finish_script_content = None
                     logger.info(f'Starting initializing trial with script at {command_script_path}')
                     runConfig = paropt.runner.RunConfig(
                         command_script_content=command_script_content,
@@ -134,17 +124,6 @@ class ParslRunner:
                     )
                     result = self.obj_func(runConfig, **self.obj_func_params).result()
 
-
-                # logger.info(f'Writing script with configs {parameter_configs}')
-                # command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
-                # if self.experiment.setup_template_string != None:
-                #     _, setup_script_content = self._writeScript(self.experiment.setup_template_string, parameter_configs, 'setup')
-                # else:
-                #     setup_script_content = None
-                # if self.experiment.finish_template_string != None:
-                #     _, finish_script_content = self._writeScript(self.experiment.finish_template_string, parameter_configs, 'finish')
-                # else:
-                #     finish_script_content = None
 
                 logger.info(f'Starting trial with script at {command_script_path}')
                 runConfig = paropt.runner.RunConfig(
@@ -171,26 +150,15 @@ class ParslRunner:
             except Exception as e:
                 err_traceback = traceback.format_exc()
                 if result is not None and result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
-                    # logger.exception(f'\n##############time out1')
                     trial = Trial(
                         outcome=-result['run_time'],
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
                     )
-                    # logger.exception(f'\n##############time out2')
                     self.optimizer.register(trial)
-                    # logger.exception(f'\n##############time out3')
-                    # trial = Trial(
-                    #     outcome=result['run_time'], # here the runtime is timeout
-                    #     parameter_configs=parameter_configs,
-                    #     run_number=self.run_number,
-                    #     experiment_id=self.experiment.id,
-                    # )
-                    # logger.exception(f'\n##############time out4')
                     logger.exception(f'time out')
                     self.storage.saveResult(self.session, trial)
-                    # logger.exception(f'\n##############time out5')
                     self.run_result['success'] = False
                     self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
 
@@ -204,17 +172,6 @@ class ParslRunner:
                     self.storage.saveResult(self.session, trial)
                     self.run_result['success'] = False
                     self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
-                # config_dic = {config.parameter.name: config.value for config in parameter_configs}
-                # logger.info(config)
-                # logger.exception(err_traceback)
-            
-        # except Exception as e:
-        #     err_traceback = traceback.format_exc()
-        #     self.run_result['success'] = False
-        #     self.run_result['message'] = (f'Failed to complete trials, experiment {self.experiment.id} '
-        #                                                                 f'run {self.run_number}:\nError: {e}\n{err_traceback}')
-        # logger.exception(err_traceback)
-        
         
         logger.info(f'Finished; Run result: {self.run_result}')
     
