@@ -159,7 +159,7 @@ class RandomSearch(BaseOptimizer):
         n_suggests = 0
         while trial != None and n_suggests < MAX_RETRY_SUGGEST:
             self.using_budget_flag = False
-            logger.info(f"Retrying suggest: Non-unique set of ParameterConfigs: {param_configs}")
+            # logger.info(f"Retrying suggest: Non-unique set of ParameterConfigs: {param_configs}")
             # This set of configurations have been used before
             # register a new trail with same outcome but with our suggested (float) values
             dup_trial = Trial(
