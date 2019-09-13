@@ -177,6 +177,9 @@ def variantCallerAccu(runConfig, **kwargs):
         timeout = kwargs['timeout']
     else:
         timeout = sys.maxsize
+
+    def objective(time, accu):
+    	pass
     def timeScript(script_name, script_content):
         """Helper for writing and running a script"""
         script_path = '{}_{}'.format(script_name, time.time())
