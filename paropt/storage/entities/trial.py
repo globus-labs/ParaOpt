@@ -22,7 +22,7 @@ class Trial(ORMBase):
     return (
       f'Trial('
       f'experiment_id={self.experiment_id}, run_number={self.run_number}, outcome={self.outcome}, '
-      f'timestamp={self.timestamp!r}, parameter_configs={self.parameter_configs!r})'
+      f'timestamp={self.timestamp!r}, parameter_configs={self.parameter_configs!r}), '
       f'objective_parameters={self.obj_parameters!r}'
     )
 

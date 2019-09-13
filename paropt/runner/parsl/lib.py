@@ -32,6 +32,7 @@ def timeCommand(runConfig, **kwargs):
             f.write(script_content)
 
         timeout_returncode = 0
+        obj_parameters = {'running_time': timeout}
         try:
             start_time = time.time()
             proc = subprocess.Popen(['bash', script_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -117,8 +118,6 @@ def searchMatrix(runConfig):
         # total_time = time.time() - start_time
         res = float(outs.decode('utf-8'))
         obj_parameters = {'running_time': res}
-
-
         return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': res, 'obj_parameters': obj_parameters}
 
     try:
@@ -194,6 +193,7 @@ def variantCallerAccu(runConfig, **kwargs):
             f.write(script_content)
 
         timeout_returncode = 0
+        obj_parameters = {'running_time': timeout}
         try:
             start_time = time.time()
             proc = subprocess.Popen(['bash', script_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -201,7 +201,7 @@ def variantCallerAccu(runConfig, **kwargs):
             outs, errs = proc.communicate()
             total_time = time.time() - start_time
             obj_parameters = {'running_time': total_time}
-            
+
             return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
         except subprocess.TimeoutExpired:
             return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout, 'obj_parameters': obj_parameters} # run time = -1 means timeout
