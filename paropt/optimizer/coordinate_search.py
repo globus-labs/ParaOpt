@@ -191,6 +191,7 @@ class CoordinateSearch(BaseOptimizer):
                 outcome=trial.outcome,
                 run_number=trial.run_number,
                 experiment_id=trial.experiment_id,
+                obj_parameters={},
             )
             self.register(dup_trial)
             # get another suggestion from updated model

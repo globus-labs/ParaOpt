@@ -140,6 +140,7 @@ class ParslRunner:
                     parameter_configs=parameter_configs,
                     run_number=self.run_number,
                     experiment_id=self.experiment.id,
+                    obj_parameters=result['obj_parameters'],
                 )
                 self.storage.saveResult(self.session, trial)
                 self.optimizer.register(trial)
@@ -155,6 +156,7 @@ class ParslRunner:
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
+                        obj_parameters=result['obj_parameters'],
                     )
                     self.optimizer.register(trial)
                     logger.exception(f'time out')
@@ -168,6 +170,7 @@ class ParslRunner:
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
+                        obj_parameters=result['obj_parameters'],
                     )
                     self.storage.saveResult(self.session, trial)
                     self.run_result['success'] = False
