@@ -170,7 +170,7 @@ class ParslRunner:
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
-                        obj_parameters=result['obj_parameters'],
+                        obj_parameters={},
                     )
                     self.storage.saveResult(self.session, trial)
                     self.run_result['success'] = False
