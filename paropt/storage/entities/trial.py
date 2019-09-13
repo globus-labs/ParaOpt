@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, 
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.types import TIMESTAMP
 from sqlalchemy.sql.expression import func
-from sqlalchemy import JSON
+from sqlalchemy.dialects.postgresql import JSON
 
 
 from .orm_base import ORMBase
