@@ -13,8 +13,8 @@ def timeCommand(runConfig, **kwargs):
     Returns
     -------
     result : dict
-        Contains 'returncode', 'stdout', and 'run_time' to indicate the result of the run
-        If returncode is not 0, run_time must be ignored.
+        Contains 'returncode', 'stdout', and 'obj_output' to indicate the result of the run
+        If returncode is not 0, obj_output must be ignored.
     """
     import os
     import subprocess
@@ -39,9 +39,9 @@ def timeCommand(runConfig, **kwargs):
             outs, errs = proc.communicate()
             total_time = time.time() - start_time
 
-            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'run_time': total_time}
+            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time}
         except subprocess.TimeoutExpired:
-            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'run_time': timeout} # run time = -1 means timeout
+            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout} # run time = -1 means timeout
 
 
     try:
@@ -50,7 +50,7 @@ def timeCommand(runConfig, **kwargs):
             res = timeScript('setupScript', runConfig.setup_script_content)
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run setupscript: \n{res["stdout"]}'
-                res['run_time'] = 0
+                res['obj_output'] = 0
                 return res
 
         res = timeScript('mainScript', runConfig.command_script_content)
@@ -60,7 +60,7 @@ def timeCommand(runConfig, **kwargs):
 
         # make neg b/c our optimizer is maximizing
         # divide by number of seconds in day to scale down for bayes opt
-        res['run_time'] = -res['run_time'] / 86400
+        res['obj_output'] = -res['obj_output'] / 86400
         main_res = res
         if main_res['returncode'] != 0:
             res['stdout'] = f'Failed to run main script: \n{main_res["stdout"]}'
@@ -71,7 +71,7 @@ def timeCommand(runConfig, **kwargs):
             res = timeScript('finishScript', runConfig.finish_script_content)
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run finish script: \n{res["stdout"]}'
-                res['run_time'] = main_res['run_time']
+                res['obj_output'] = main_res['obj_output']
                 return res
         
         # return the timing result
@@ -80,7 +80,7 @@ def timeCommand(runConfig, **kwargs):
         # this should not be reached - Indicates a bug in code
         return {'returncode': -1,
                 'stdout': "(BUG) Exception occurred during execution: {}".format(e),
-                'run_time': 0}
+                'obj_output': 0}
 
 
 
@@ -96,8 +96,8 @@ def searchMatrix(runConfig):
     Returns
     -------
     result : dict
-        Contains 'returncode', 'stdout', and 'run_time' to indicate the result of the run
-        If returncode is not 0, run_time must be ignored.
+        Contains 'returncode', 'stdout', and 'obj_output' to indicate the result of the run
+        If returncode is not 0, obj_output must be ignored.
     """
     import os
     import subprocess
@@ -114,7 +114,7 @@ def searchMatrix(runConfig):
         # total_time = time.time() - start_time
         res = float(outs.decode('utf-8'))
 
-        return {'returncode': proc.returncode, 'stdout': outs.decode(), 'run_time': res}
+        return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': res}
 
     try:
         # run setup script
@@ -122,14 +122,14 @@ def searchMatrix(runConfig):
             res = runScript('setupScript', runConfig.setup_script_content)
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run setupscript: \n{res["stdout"]}'
-                res['run_time'] = 0
+                res['obj_output'] = 0
                 return res
         
         # time command script
         res = runScript('mainScript', runConfig.command_script_content)
         # make neg b/c our optimizer is maximizing
         # divide by number of seconds in day to scale down for bayes opt
-        res['run_time'] = -res['run_time']
+        res['obj_output'] = -res['obj_output']
         main_res = res
         if main_res['returncode'] != 0:
             res['stdout'] = f'Failed to run main script: \n{main_res["stdout"]}'
@@ -140,7 +140,7 @@ def searchMatrix(runConfig):
             res = runScript('finishScript', runConfig.finish_script_content)
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run finish script: \n{res["stdout"]}'
-                res['run_time'] = main_res['run_time']
+                res['obj_output'] = main_res['obj_output']
                 return res
         
         # return the timing result
@@ -149,7 +149,7 @@ def searchMatrix(runConfig):
         # this should not be reached - Indicates a bug in code
         return {'returncode': -1,
                 'stdout': "(BUG) Exception occurred during execution: {}".format(e),
-                'run_time': 0}
+                'obj_output': 0}
 
 
 @python_app
@@ -165,8 +165,8 @@ def variantCallerAccu(runConfig, **kwargs):
     Returns
     -------
     result : dict
-        Contains 'returncode', 'stdout', and 'run_time' to indicate the result of the run
-        If returncode is not 0, run_time must be ignored.
+        Contains 'returncode', 'stdout', and 'obj_output' to indicate the result of the run
+        If returncode is not 0, obj_output must be ignored.
     """
     import os
     import subprocess
@@ -177,6 +177,9 @@ def variantCallerAccu(runConfig, **kwargs):
         timeout = kwargs['timeout']
     else:
         timeout = sys.maxsize
+
+    def objective(time, accu):
+    	pass
     def timeScript(script_name, script_content):
         """Helper for writing and running a script"""
         script_path = '{}_{}'.format(script_name, time.time())
@@ -191,9 +194,9 @@ def variantCallerAccu(runConfig, **kwargs):
             outs, errs = proc.communicate()
             total_time = time.time() - start_time
 
-            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'run_time': total_time}
+            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time}
         except subprocess.TimeoutExpired:
-            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'run_time': timeout} # run time = -1 means timeout
+            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout} # run time = -1 means timeout
 
 
     try:
@@ -202,7 +205,7 @@ def variantCallerAccu(runConfig, **kwargs):
             res = timeScript('setupScript', runConfig.setup_script_content)
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run setupscript: \n{res["stdout"]}'
-                res['run_time'] = 0
+                res['obj_output'] = 0
                 return res
 
         res = timeScript('mainScript', runConfig.command_script_content)
@@ -210,7 +213,7 @@ def variantCallerAccu(runConfig, **kwargs):
             return res
         # make neg b/c our optimizer is maximizing
         # divide by number of seconds in day to scale down for bayes opt
-        res['run_time'] = -res['run_time'] / 86400
+        res['obj_output'] = -res['obj_output'] / 86400
         main_res = res
         if main_res['returncode'] != 0:
             res['stdout'] = f'Failed to run main script: \n{main_res["stdout"]}'
@@ -221,7 +224,7 @@ def variantCallerAccu(runConfig, **kwargs):
             res = timeScript('finishScript', runConfig.finish_script_content)
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run finish script: \n{res["stdout"]}'
-                res['run_time'] = main_res['run_time']
+                res['obj_output'] = main_res['obj_output']
                 return res
         
         # return the timing result
@@ -230,5 +233,5 @@ def variantCallerAccu(runConfig, **kwargs):
         # this should not be reached - Indicates a bug in code
         return {'returncode': -1,
                 'stdout': "(BUG) Exception occurred during execution: {}".format(e),
-                'run_time': 0}
+                'obj_output': 0}
                 
