@@ -152,7 +152,7 @@ class ParslRunner:
                 err_traceback = traceback.format_exc()
                 if result is not None and result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
                     trial = Trial(
-                        outcome=-result['obj_output'],
+                        outcome=result['obj_output'],
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
