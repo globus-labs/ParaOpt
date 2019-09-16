@@ -140,6 +140,7 @@ class ParslRunner:
                     parameter_configs=parameter_configs,
                     run_number=self.run_number,
                     experiment_id=self.experiment.id,
+                    obj_parameters=result['obj_parameters'],
                 )
                 self.storage.saveResult(self.session, trial)
                 self.optimizer.register(trial)
@@ -151,10 +152,11 @@ class ParslRunner:
                 err_traceback = traceback.format_exc()
                 if result is not None and result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
                     trial = Trial(
-                        outcome=-result['obj_output'],
+                        outcome=result['obj_output'],
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
+                        obj_parameters=result['obj_parameters'],
                     )
                     self.optimizer.register(trial)
                     logger.exception(f'time out')
@@ -168,6 +170,7 @@ class ParslRunner:
                         parameter_configs=parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
+                        obj_parameters={},
                     )
                     self.storage.saveResult(self.session, trial)
                     self.run_result['success'] = False

@@ -32,16 +32,18 @@ def timeCommand(runConfig, **kwargs):
             f.write(script_content)
 
         timeout_returncode = 0
+        obj_parameters = {'running_time': timeout}
         try:
             start_time = time.time()
             proc = subprocess.Popen(['bash', script_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             timeout_returncode = proc.wait(timeout=timeout)
             outs, errs = proc.communicate()
             total_time = time.time() - start_time
+            obj_parameters = {'running_time': total_time}
 
-            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time}
+            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
         except subprocess.TimeoutExpired:
-            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout} # run time = -1 means timeout
+            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout, 'obj_parameters': obj_parameters} # run time = -1 means timeout
 
 
     try:
@@ -51,6 +53,7 @@ def timeCommand(runConfig, **kwargs):
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run setupscript: \n{res["stdout"]}'
                 res['obj_output'] = 0
+                res['obj_parameters'] = {}
                 return res
 
         res = timeScript('mainScript', runConfig.command_script_content)
@@ -60,7 +63,7 @@ def timeCommand(runConfig, **kwargs):
 
         # make neg b/c our optimizer is maximizing
         # divide by number of seconds in day to scale down for bayes opt
-        res['obj_output'] = -res['obj_output'] / 86400
+        res['obj_output'] = -float(res['obj_output']) / 86400
         main_res = res
         if main_res['returncode'] != 0:
             res['stdout'] = f'Failed to run main script: \n{main_res["stdout"]}'
@@ -72,6 +75,7 @@ def timeCommand(runConfig, **kwargs):
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run finish script: \n{res["stdout"]}'
                 res['obj_output'] = main_res['obj_output']
+                res['obj_parameters'] = main_res['obj_parameters']
                 return res
         
         # return the timing result
@@ -113,8 +117,8 @@ def searchMatrix(runConfig):
         outs, errs = proc.communicate()
         # total_time = time.time() - start_time
         res = float(outs.decode('utf-8'))
-
-        return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': res}
+        obj_parameters = {'running_time': res}
+        return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': res, 'obj_parameters': obj_parameters}
 
     try:
         # run setup script
@@ -123,6 +127,7 @@ def searchMatrix(runConfig):
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run setupscript: \n{res["stdout"]}'
                 res['obj_output'] = 0
+                res['obj_parameters'] = {}
                 return res
         
         # time command script
@@ -141,6 +146,7 @@ def searchMatrix(runConfig):
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run finish script: \n{res["stdout"]}'
                 res['obj_output'] = main_res['obj_output']
+                res['obj_parameters'] = main_res['obj_parameters']
                 return res
         
         # return the timing result
@@ -187,16 +193,18 @@ def variantCallerAccu(runConfig, **kwargs):
             f.write(script_content)
 
         timeout_returncode = 0
+        obj_parameters = {'running_time': timeout}
         try:
             start_time = time.time()
             proc = subprocess.Popen(['bash', script_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             timeout_returncode = proc.wait(timeout=timeout)
             outs, errs = proc.communicate()
             total_time = time.time() - start_time
+            obj_parameters = {'running_time': total_time}
 
-            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time}
+            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
         except subprocess.TimeoutExpired:
-            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout} # run time = -1 means timeout
+            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout, 'obj_parameters': obj_parameters} # run time = -1 means timeout
 
 
     try:
@@ -206,6 +214,7 @@ def variantCallerAccu(runConfig, **kwargs):
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run setupscript: \n{res["stdout"]}'
                 res['obj_output'] = 0
+                res['obj_parameters'] = {}
                 return res
 
         res = timeScript('mainScript', runConfig.command_script_content)
@@ -225,6 +234,7 @@ def variantCallerAccu(runConfig, **kwargs):
             if res['returncode'] != 0:
                 res['stdout'] = f'Failed to run finish script: \n{res["stdout"]}'
                 res['obj_output'] = main_res['obj_output']
+                res['obj_parameters'] = main_res['obj_parameters']
                 return res
         
         # return the timing result
