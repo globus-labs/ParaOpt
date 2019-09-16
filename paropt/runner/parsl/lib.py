@@ -63,7 +63,7 @@ def timeCommand(runConfig, **kwargs):
 
         # make neg b/c our optimizer is maximizing
         # divide by number of seconds in day to scale down for bayes opt
-        res['obj_output'] = -res['obj_output'] / 86400
+        res['obj_output'] = -float(res['obj_output']) / 86400
         main_res = res
         if main_res['returncode'] != 0:
             res['stdout'] = f'Failed to run main script: \n{main_res["stdout"]}'
