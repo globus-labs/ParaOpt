@@ -185,7 +185,8 @@ def variantCallerAccu(runConfig, **kwargs):
         timeout = sys.maxsize
 
     def objective(time, accu):
-    	pass
+    	return accu/(1-accu)/time
+
     def timeScript(script_name, script_content):
         """Helper for writing and running a script"""
         script_path = '{}_{}'.format(script_name, time.time())
@@ -200,8 +201,9 @@ def variantCallerAccu(runConfig, **kwargs):
             timeout_returncode = proc.wait(timeout=timeout)
             outs, errs = proc.communicate()
             total_time = time.time() - start_time
-            obj_parameters = {'running_time': total_time}
-
+            # accu = float(outs.decode('utf-8'))
+            accu = outs.decode('utf-8')
+            obj_parameters = {'running_time': total_time, 'accuracy': accu}
             return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
         except subprocess.TimeoutExpired:
             return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout, 'obj_parameters': obj_parameters} # run time = -1 means timeout
