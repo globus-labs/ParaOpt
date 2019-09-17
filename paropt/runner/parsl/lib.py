@@ -179,7 +179,7 @@ def variantCallerAccu(runConfig, **kwargs):
     import time
     import sys
 
-    if 'timeout' in kwargs:
+    if 'timeout' in kwargs and kwargs['timeout'] != 0:
         timeout = kwargs['timeout']
     else:
         timeout = sys.maxsize
