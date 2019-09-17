@@ -112,7 +112,7 @@ def getObjective(obj_config):
         print(obj_config)
         obj_info['obj_name'] = get_from_dic(obj_config, 'obj_name')
         obj_info['obj_params'] = get_from_dic(obj_config, 'obj_params')
-        if obj_info is not None and 'timeout' in obj_info['obj_params'].keys():
+        if obj_info['obj_params'] is not None and 'timeout' in obj_info['obj_params'].keys():
             obj_info['obj_params']['timeout'] = int(obj_info['obj_params']['timeout'])
         return obj_info
 
