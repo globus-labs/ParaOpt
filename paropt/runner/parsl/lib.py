@@ -185,18 +185,18 @@ def variantCallerAccu(runConfig, **kwargs):
         timeout = sys.maxsize
 
     def sigmoid(x):
-		return 1/(1+np.exp(-x))
-	def func(accu, time):
-	    return sigmoid(accu/(1-accu)/time)
+        return 1/(1+np.exp(-x))
+    def func(accu, time):
+        return sigmoid(accu/(1-accu)/time)
 
 
 
-	time_list = [i/60/30 for i in range(100, 86400, 500)]
+    time_list = [i/60/30 for i in range(100, 86400, 500)]
 
     def objective(time, accu):
-    	# change time to half an hour
-    	time = time/60/30
-    	return sigmoid(accu/(1-accu)/time)
+        # change time to half an hour
+        time = time/60/30
+        return sigmoid(accu/(1-accu)/time)
 
     def timeScript(script_name, script_content):
         """Helper for writing and running a script"""
