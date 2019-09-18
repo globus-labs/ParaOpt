@@ -202,8 +202,9 @@ def variantCallerAccu(runConfig, **kwargs):
             outs, errs = proc.communicate()
             total_time = time.time() - start_time
             # accu = float(outs.decode('utf-8'))
-            accu = outs.decode('utf-8')
-            obj_parameters = {'running_time': total_time, 'accuracy': accu}
+            str_res = outs.decode('utf-8')
+            res = str_res.strip().split()
+            obj_parameters = {'running_time': total_time, 'precision': float(res[0]), 'recall': float(res[1])}
             return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
         except subprocess.TimeoutExpired:
             return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout, 'obj_parameters': obj_parameters} # run time = -1 means timeout
