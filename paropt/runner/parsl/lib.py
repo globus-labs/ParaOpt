@@ -184,8 +184,19 @@ def variantCallerAccu(runConfig, **kwargs):
     else:
         timeout = sys.maxsize
 
+    def sigmoid(x):
+		return 1/(1+np.exp(-x))
+	def func(accu, time):
+	    return sigmoid(accu/(1-accu)/time)
+
+
+
+	time_list = [i/60/30 for i in range(100, 86400, 500)]
+
     def objective(time, accu):
-    	return accu/(1-accu)/time
+    	# change time to half an hour
+    	time = time/60/30
+    	return sigmoid(accu/(1-accu)/time)
 
     def timeScript(script_name, script_content):
         """Helper for writing and running a script"""
@@ -202,12 +213,16 @@ def variantCallerAccu(runConfig, **kwargs):
             outs, errs = proc.communicate()
             total_time = time.time() - start_time
             # accu = float(outs.decode('utf-8'))
+
+            # caller time here in sec
             str_res = outs.decode('utf-8')
             res = str_res.strip().split()
-            obj_parameters = {'running_time': total_time, 'precision': float(res[0]), 'recall': float(res[1])}
+            obj_parameters = {'running_time': total_time, 'precision': float(res[1]), 'recall': float(res[2]), 'caller_time': float(res[0])}
+            obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
+            timeout_output = objective(timeout, 0)
             return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
         except subprocess.TimeoutExpired:
-            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout, 'obj_parameters': obj_parameters} # run time = -1 means timeout
+            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout_output, 'obj_parameters': obj_parameters} # run time = -1 means timeout
 
 
     try:
@@ -225,7 +240,7 @@ def variantCallerAccu(runConfig, **kwargs):
             return res
         # make neg b/c our optimizer is maximizing
         # divide by number of seconds in day to scale down for bayes opt
-        res['obj_output'] = -res['obj_output'] / 86400
+        # res['obj_output'] = -res['obj_output'] / 86400
         main_res = res
         if main_res['returncode'] != 0:
             res['stdout'] = f'Failed to run main script: \n{main_res["stdout"]}'
