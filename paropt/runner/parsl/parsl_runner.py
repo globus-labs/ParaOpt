@@ -122,7 +122,9 @@ class ParslRunner:
                         setup_script_content=setup_script_content,
                         finish_script_content=finish_script_content,
                     )
-                    initializing_func_param = self.obj_func_params
+                    initializing_func_param = {}
+                    for key, val in self.obj_func_params.items():
+                        initializing_func_param[key] = val
                     initializing_func_param['timeout'] = 300
                     # result = self.obj_func(runConfig, **self.obj_func_params).result()
                     result = self.obj_func(runConfig, **initializing_func_param).result()
