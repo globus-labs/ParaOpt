@@ -235,6 +235,7 @@ def variantCallerAccu(runConfig, **kwargs):
 
             ret_dic['obj_output'] = obj_output
             ret_dic['obj_parameters'] = obj_parameters
+            ret_dic['returncode'] = timeout_returncode
             return ret_dic
             # return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout_output, 'obj_parameters': obj_parameters} # run time = -1 means timeout
         except:
