@@ -178,6 +178,7 @@ def variantCallerAccu(runConfig, **kwargs):
     import subprocess
     import time
     import sys
+    import math
 
     if 'timeout' in kwargs and kwargs['timeout'] != 0:
         timeout = kwargs['timeout']
@@ -185,7 +186,7 @@ def variantCallerAccu(runConfig, **kwargs):
         timeout = sys.maxsize
 
     def sigmoid(x):
-        return 1/(1+np.exp(-x))
+        return 1/(1+math.exp(-x))
     def func(accu, time):
         return sigmoid(accu/(1-accu)/time)
 
