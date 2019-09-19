@@ -190,14 +190,13 @@ def variantCallerAccu(runConfig, **kwargs):
     def func(accu, time):
         return sigmoid(accu/(1-accu)/time)
 
-
-
-    time_list = [i/60/30 for i in range(100, 86400, 500)]
-
     def objective(time, accu):
         # change time to half an hour
         time = time/60/30
         return sigmoid(accu/(1-accu)/time)
+
+    def f1_obj(precision, recall):
+        return 2*precision*recall/(precision+recall)
 
     def timeScript(script_name, script_content):
         """Helper for writing and running a script"""
@@ -207,27 +206,40 @@ def variantCallerAccu(runConfig, **kwargs):
 
         timeout_returncode = 0
         obj_parameters = {'running_time': timeout}
+        ret_dic = {'returncode': None, 'stdout': None, 'obj_output': None, 'obj_parameters': None}
         try:
             start_time = time.time()
             proc = subprocess.Popen(['bash', script_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             timeout_returncode = proc.wait(timeout=timeout)
             outs, errs = proc.communicate()
             total_time = time.time() - start_time
-            # accu = float(outs.decode('utf-8'))
+            
+            ret_dic['returncode'] = proc.returncode
+            ret_dic['obj_output'] = total_time
+            ret_dic['stdout'] = outs.decode('utf-8')
 
             # caller time here in sec
             str_res = outs.decode('utf-8')
             res = str_res.strip().split()
-            obj_parameters = {'running_time': total_time, 'precision': float(res[1]), 'recall': float(res[2]), 'caller_time': float(res[0])}
+            obj_parameters = {'running_time': total_time, 'precision': float(res[1]), 'recall': float(res[2]), 'caller_time': float(res[0])/1000}
             obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
+
+            # ret_dic['obj_output'] = obj_output
+            ret_dic['obj_parameters'] = obj_parameters
             # timeout_output = objective(timeout, 0)
-            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
+            return ret_dic
+            # return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
         except subprocess.TimeoutExpired:
             obj_parameters = {'running_time': timeout, 'precision': 0, 'recall': 0, 'caller_time': timeout}
             obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
-            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout_output, 'obj_parameters': obj_parameters} # run time = -1 means timeout
+
+            ret_dic['obj_output'] = obj_output
+            ret_dic['obj_parameters'] = obj_parameters
+            return ret_dic
+            # return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout_output, 'obj_parameters': obj_parameters} # run time = -1 means timeout
         except:
-            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
+            return ret_dic
+            # return {'returncode': proc.returncode, 'stdout': outs.decode('utf-8'), 'obj_output': total_time, 'obj_parameters': obj_parameters}
 
 
     try:
