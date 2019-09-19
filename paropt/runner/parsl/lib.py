@@ -226,6 +226,8 @@ def variantCallerAccu(runConfig, **kwargs):
             obj_parameters = {'running_time': timeout, 'precision': 0, 'recall': 0, 'caller_time': timeout}
             obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
             return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout_output, 'obj_parameters': obj_parameters} # run time = -1 means timeout
+        except:
+            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
 
 
     try:
