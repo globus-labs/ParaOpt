@@ -196,6 +196,8 @@ def variantCallerAccu(runConfig, **kwargs):
         return sigmoid(accu/(1-accu)/time)
 
     def f1_obj(precision, recall):
+        if precision + recall == 0:
+            return 0
         return 2*precision*recall/(precision+recall)
 
     def timeScript(script_name, script_content):
@@ -222,7 +224,10 @@ def variantCallerAccu(runConfig, **kwargs):
             str_res = outs.decode('utf-8')
             res = str_res.strip().split()
             obj_parameters = {'running_time': total_time, 'precision': float(res[1]), 'recall': float(res[2]), 'caller_time': float(res[0])/1000}
-            obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
+            
+            # the output of utility, which is used by optimizer
+            # obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
+            obj_output = f1_obj(obj_parameters['precision'], obj_parameters['recall'])
 
             # ret_dic['obj_output'] = obj_output
             ret_dic['obj_parameters'] = obj_parameters
@@ -231,7 +236,8 @@ def variantCallerAccu(runConfig, **kwargs):
             # return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
         except subprocess.TimeoutExpired:
             obj_parameters = {'running_time': timeout, 'precision': 0, 'recall': 0, 'caller_time': timeout}
-            obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
+            # obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
+            obj_output = f1_obj(obj_parameters['precision'], obj_parameters['recall'])
 
             ret_dic['obj_output'] = obj_output
             ret_dic['obj_parameters'] = obj_parameters
