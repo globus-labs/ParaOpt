@@ -72,4 +72,5 @@ else
   shift
 fi
 
+export REDIS_WORKERS=8
 sudo -E docker-compose -f docker-compose.yml -f docker-compose.${paropt_env}.yml up $@

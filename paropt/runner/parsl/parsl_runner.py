@@ -122,7 +122,12 @@ class ParslRunner:
                         setup_script_content=setup_script_content,
                         finish_script_content=finish_script_content,
                     )
-                    result = self.obj_func(runConfig, **self.obj_func_params).result()
+                    initializing_func_param = {}
+                    for key, val in self.obj_func_params.items():
+                        initializing_func_param[key] = val
+                    initializing_func_param['timeout'] = 300
+                    # result = self.obj_func(runConfig, **self.obj_func_params).result()
+                    result = self.obj_func(runConfig, **initializing_func_param).result()
 
 
                 logger.info(f'Starting trial with script at {command_script_path}')

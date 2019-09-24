@@ -178,14 +178,28 @@ def variantCallerAccu(runConfig, **kwargs):
     import subprocess
     import time
     import sys
+    import math
 
-    if 'timeout' in kwargs:
+    if 'timeout' in kwargs and kwargs['timeout'] != 0:
         timeout = kwargs['timeout']
     else:
         timeout = sys.maxsize
 
+    def sigmoid(x):
+        return 1/(1+math.exp(-x))
+    def func(accu, time):
+        return sigmoid(accu/(1-accu)/time)
+
     def objective(time, accu):
-    	pass
+        # change time to half an hour
+        time = time/60/30
+        return sigmoid(accu/(1-accu)/time)
+
+    def f1_obj(precision, recall):
+        if precision + recall == 0:
+            return 0
+        return 2*precision*recall/(precision+recall)
+
     def timeScript(script_name, script_content):
         """Helper for writing and running a script"""
         script_path = '{}_{}'.format(script_name, time.time())
@@ -194,17 +208,45 @@ def variantCallerAccu(runConfig, **kwargs):
 
         timeout_returncode = 0
         obj_parameters = {'running_time': timeout}
+        ret_dic = {'returncode': None, 'stdout': None, 'obj_output': None, 'obj_parameters': None}
         try:
             start_time = time.time()
             proc = subprocess.Popen(['bash', script_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             timeout_returncode = proc.wait(timeout=timeout)
             outs, errs = proc.communicate()
             total_time = time.time() - start_time
-            obj_parameters = {'running_time': total_time}
+            
+            ret_dic['returncode'] = proc.returncode
+            ret_dic['obj_output'] = total_time
+            ret_dic['stdout'] = outs.decode('utf-8')
 
-            return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
+            # caller time here in sec
+            str_res = outs.decode('utf-8')
+            res = str_res.strip().split()
+            obj_parameters = {'running_time': total_time, 'precision': float(res[1]), 'recall': float(res[2]), 'caller_time': float(res[0])/1000}
+            
+            # the output of utility, which is used by optimizer
+            # obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
+            obj_output = f1_obj(obj_parameters['precision'], obj_parameters['recall'])
+
+            # ret_dic['obj_output'] = obj_output
+            ret_dic['obj_parameters'] = obj_parameters
+            # timeout_output = objective(timeout, 0)
+            return ret_dic
+            # return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
         except subprocess.TimeoutExpired:
-            return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout, 'obj_parameters': obj_parameters} # run time = -1 means timeout
+            obj_parameters = {'running_time': timeout, 'precision': 0, 'recall': 0, 'caller_time': timeout}
+            # obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
+            obj_output = f1_obj(obj_parameters['precision'], obj_parameters['recall'])
+
+            ret_dic['obj_output'] = obj_output
+            ret_dic['obj_parameters'] = obj_parameters
+            ret_dic['returncode'] = timeout_returncode
+            return ret_dic
+            # return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout_output, 'obj_parameters': obj_parameters} # run time = -1 means timeout
+        except:
+            return ret_dic
+            # return {'returncode': proc.returncode, 'stdout': outs.decode('utf-8'), 'obj_output': total_time, 'obj_parameters': obj_parameters}
 
 
     try:
@@ -222,7 +264,7 @@ def variantCallerAccu(runConfig, **kwargs):
             return res
         # make neg b/c our optimizer is maximizing
         # divide by number of seconds in day to scale down for bayes opt
-        res['obj_output'] = -res['obj_output'] / 86400
+        # res['obj_output'] = -res['obj_output'] / 86400
         main_res = res
         if main_res['returncode'] != 0:
             res['stdout'] = f'Failed to run main script: \n{main_res["stdout"]}'
