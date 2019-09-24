@@ -99,7 +99,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-config/
+!config/
 !config/.example.env
 
 # Spyder project settings
