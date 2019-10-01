@@ -223,7 +223,8 @@ def variantCallerAccu(runConfig, **kwargs):
             # caller time here in sec
             str_res = outs.decode('utf-8')
             res = str_res.strip().split()
-            obj_parameters = {'running_time': total_time, 'precision': float(res[-2]), 'recall': float(res[-1]), 'caller_time': float(res[-3])/1000}
+            obj_parameters = {'running_time': timeout, 'precision': 0, 'recall': 0, 'caller_time': timeout}
+            # obj_parameters = {'running_time': total_time, 'precision': float(res[-2]), 'recall': float(res[-1]), 'caller_time': float(res[-3])/1000}
             
             # the output of utility, which is used by optimizer
             # obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
