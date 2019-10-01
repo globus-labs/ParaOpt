@@ -271,7 +271,7 @@ def variantCallerAccu(runConfig, **kwargs):
         # res['obj_output'] = -res['obj_output'] / 86400
         main_res = res
         if main_res['returncode'] != 0:
-            res['stdout'] = f'Failed to run main script: \n{main_res["stdout"]}'
+            # res['stdout'] = f'Failed to run main script: \n{main_res["stdout"]}'
             return main_res
 
         # run post script
