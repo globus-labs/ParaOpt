@@ -24,7 +24,10 @@ class ParslRunner:
                 logs_root_dir='.'):
 
         self.obj_func = obj_func
-        self.obj_func_params = obj_func_params
+        if obj_func_params is None:
+            self.obj_func_params = {'timeout': 0}
+        else:
+            self.obj_func_params = obj_func_params
         self._dfk = None
         self.optimizer = optimizer
         self.storage = storage if storage != None else LocalFile()

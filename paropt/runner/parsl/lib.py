@@ -89,7 +89,7 @@ def timeCommand(runConfig, **kwargs):
 
 
 @python_app
-def searchMatrix(runConfig):
+def searchMatrix(runConfig, **kwargs):
     """Time the main command script. Exits early on failure at any step (setup, main, finish)
 
     Parameters
