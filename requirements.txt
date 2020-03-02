@@ -5,3 +5,4 @@ sqlalchemy==1.3.3
 sqlalchemy-utils==0.33.11
 typeguard==2.7.1
 dill==0.2.7.1
+tblib
