@@ -63,7 +63,7 @@ class PBSProCompute(Compute):
   walltime = Column(String(10))
   scheduler_option = Column(String(150))
 
-  __mapper_args__ = {'polymorphic_identity': 'ec2'}
+  __mapper_args__ = {'polymorphic_identity': 'PBSPro'}
 
   def __repr__(self):
     return (
