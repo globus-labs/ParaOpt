@@ -6,7 +6,7 @@ import logging
 
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor, HighThroughputExecutor
-from parsl.providers import AWSProvider
+from parsl.providers import AWSProvider, PBSProProvider
 
 from paropt.storage.entities import EC2Compute, LocalCompute, PBSProCompute
 
