@@ -10,6 +10,8 @@ from parsl.providers import AWSProvider
 
 from paropt.storage.entities import EC2Compute, LocalCompute, PBSProCompute
 
+from parsl.addresses import address_by_interface
+
 logger = logging.getLogger(__name__)
 
 def getAWSPublicIP():
