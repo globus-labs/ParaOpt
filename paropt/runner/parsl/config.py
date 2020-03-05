@@ -100,7 +100,7 @@ def parslConfigFromCompute(compute):
               scheduler_options=compute.scheduler_options,
               # Command to be run before starting a worker, such as:
               # 'module load Anaconda; source activate parsl_env'.
-              worker_init='module load openmpi\nsource activate paropt',
+              worker_init=compute.worker_init,
               # number of compute nodes allocated for each block
               nodes_per_block=1,
               min_blocks=1,

@@ -61,7 +61,8 @@ class LocalCompute(Compute):
 class PBSProCompute(Compute):
   cpus_per_node = Column(String(5))
   walltime = Column(String(10))
-  scheduler_options = Column(String(150))
+  scheduler_options = Column(String(100))
+  worker_init = Column(String(100))
 
   __mapper_args__ = {'polymorphic_identity': 'PBSPro'}
 
@@ -71,6 +72,7 @@ class PBSProCompute(Compute):
       f'cpus_per_node={self.cpus_per_node}'
       f'walltime={self.walltime}'
       f'scheduler_options={self.scheduler_options}'
+      f'worker_init={self.worker_init}'
       f')'
     )
   
@@ -79,5 +81,6 @@ class PBSProCompute(Compute):
       'type': self.type,
       'cpus_per_node': self.cpus_per_node,
       'walltime': self.walltime,
-      'scheduler_options': self.scheduler_options
+      'scheduler_options': self.scheduler_options,
+      'worker_init': self.worker_init
     }
