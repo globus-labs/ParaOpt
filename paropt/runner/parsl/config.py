@@ -102,8 +102,8 @@ def parslConfigFromCompute(compute):
               # 'module load Anaconda; source activate parsl_env'.
               worker_init='',
               # number of compute nodes allocated for each block
-              nodes_per_block=3,
-              min_blocks=3,
+              nodes_per_block=1,
+              min_blocks=1,
               max_blocks=5,
               cpus_per_node=compute.cpus_per_node,
               # medium queue has a max walltime of 24 hrs
