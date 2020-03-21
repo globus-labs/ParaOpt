@@ -191,7 +191,7 @@ class ParslRunner:
         if self.plot_info['draw_plot']:
             # session = db_storage.Session()
             try:
-                trials = self.storage.getTrials(self.session, self.experiment_id)
+                trials = self.storage.getTrials(self.session, self.experiment.id)
                 trials_dicts = [trial.asdict() for trial in trials]
             except:
                 self.session.rollback()
