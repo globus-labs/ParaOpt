@@ -11,7 +11,7 @@ from paropt.storage import LocalFile
 from paropt.storage.entities import Trial, ParameterConfig
 import paropt.runner
 from paropt.runner.parsl.config import parslConfigFromCompute
-frim paropt.util.plot import GridSearch_plot
+from paropt.util.plot import GridSearch_plot
 
 logger = logging.getLogger(__name__)
 
