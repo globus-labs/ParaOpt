@@ -23,7 +23,7 @@ def GridSearch_plot_1D(data, plot_info):
 
     plt.legend()
 
-    plot_name = os.path.join(plot_info['plot_dir'], f'{plot_info['experiment_id']}.png')
+    plot_name = os.path.join(plot_info['plot_dir'], f'{plot_info["experiment_id"]}.png')
     plt.savefig(plot_name)
     return {'success': True, 'error': None}
 
