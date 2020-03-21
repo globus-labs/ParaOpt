@@ -9,6 +9,7 @@ import parsl
 from paropt import setFileLogger
 from paropt.storage import LocalFile
 from paropt.storage.entities import Trial, ParameterConfig
+from paropt.optimizer import *
 import paropt.runner
 from paropt.runner.parsl.config import parslConfigFromCompute
 from paropt.util.plot import GridSearch_plot
