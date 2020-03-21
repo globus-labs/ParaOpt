@@ -57,9 +57,9 @@ def GridSearch_plot(raw_data, plot_info):
             data[obj_name] = val
 
     if len(parameter_names) == 1:
-        ret = GridSearch_plot_1D(data, plot_info)
+        ret = GridSearch_plot_1D(data, self.plot_info)
     else:
-        ret = GridSearch_plot_2D(data, plot_info)
+        ret = GridSearch_plot_2D(data, self.plot_info)
 
     return ret
     pass
