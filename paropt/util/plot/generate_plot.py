@@ -51,7 +51,7 @@ def GridSearch_plot(raw_data, plot_info):
         data[obj] = []
 
     for trial in raw_data:
-        for param_name, val in trial['parameter_config']:
+        for param_name, val in trial['parameter_configs']:
             data[param_name].append(val)
         for obj_name, val in trial['obj_parameters']:
             data[obj_name] = val
