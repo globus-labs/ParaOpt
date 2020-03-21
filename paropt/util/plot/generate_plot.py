@@ -13,7 +13,7 @@ def GridSearch_plot_1D(data, plot_info):
     fig, axes = plt.subplot(figsize=(12, 6))
     for obj_name in data['obj_names']:
         y_val_by_x = {x: [] for x in x_vals}
-        for idx, x_val in range(len(data[data['parameter_names'][0]])):
+        for idx, x_val in enumerate(data[data['parameter_names'][0]]):
             y_val_by_x[x_val].append(data[obj_name][idx])
 
         y_vals = [np.mean(y_val_by_x[x_val]) for x_val in x_vals]
@@ -53,7 +53,7 @@ def GridSearch_plot(raw_data, plot_info):
     for trial in raw_data:
         for val in trial['parameter_configs']:
             data[val['parameter_name']].append(val['value'])
-        for obj_name, val in trial['obj_parameters']:
+        for obj_name, val in trial['obj_parameters'].items():
             data[obj_name] = val
 
     if len(parameter_names) == 1:
