@@ -199,9 +199,9 @@ class ParslRunner:
             # finally:
             #     session.close()
             # return jsonify(trials), 200
-            log.info(f'res: {trials_dicts}')
+            logger.info(f'res: {trials_dicts}')
         else:
-            log.info(f'Skip generating plot')
+            logger.info(f'Skip generating plot')
     
     def cleanup(self):
         """Cleanup DFK and parsl"""
