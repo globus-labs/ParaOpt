@@ -11,6 +11,7 @@ from paropt.storage import LocalFile
 from paropt.storage.entities import Trial, ParameterConfig
 import paropt.runner
 from paropt.runner.parsl.config import parslConfigFromCompute
+frim paropt.util.plot import GridSearch_plot
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,8 @@ class ParslRunner:
         self.run_number = last_run_number + 1
         self.optimizer.setExperiment(self.experiment)
         self.command = experiment.command_template_string
+
+        self.plot_info['experiment_id'] = self.experiment.id
 
         # setup compute
         self.compute = self.experiment.compute
@@ -200,6 +203,15 @@ class ParslRunner:
             #     session.close()
             # return jsonify(trials), 200
             logger.info(f'res: {trials_dicts}')
+            if isinstance(optimizer, GridSearch):
+                ret = GridSearch_plot(trials_dicts, plot_info)
+            else:
+                logger.info(f'Unsupport type of optimizer for plot')
+
+            if ret['success'] == False:
+                logger.info(f'Error when generating plot: {ret['error']}')
+            else:
+                logger.info(f'Successfully generating plot')
         else:
             logger.info(f'Skip generating plot')
     
