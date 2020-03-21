@@ -21,8 +21,11 @@ class ParslRunner:
                 obj_func_params=None, 
                 storage=None,
                 experiment=None,
-                logs_root_dir='.'):
+                logs_root_dir='.',
+                plot_info={'draw_plot': False, 'plot_dir': '.'}
+                ):
 
+        self.plot_info = plot_info
         self.obj_func = obj_func
         if obj_func_params is None:
             self.obj_func_params = {'timeout': 0}
@@ -185,6 +188,20 @@ class ParslRunner:
                     self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
         
         logger.info(f'Finished; Run result: {self.run_result}')
+        if self.plot_info['draw_plot']:
+            # session = db_storage.Session()
+            try:
+                trials = self.storage.getTrials(self.session, self.experiment_id)
+                trials_dicts = [trial.asdict() for trial in trials]
+            except:
+                session.rollback()
+                raise
+            # finally:
+            #     session.close()
+            # return jsonify(trials), 200
+            log.info(f'res: {trials_dicts}')
+        else:
+            log.info(f'Skip generating plot')
     
     def cleanup(self):
         """Cleanup DFK and parsl"""
