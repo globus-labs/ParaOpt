@@ -203,7 +203,7 @@ class ParslRunner:
             #     session.close()
             # return jsonify(trials), 200
             logger.info(f'res: {trials_dicts}')
-            if isinstance(optimizer, GridSearch):
+            if isinstance(self.optimizer, GridSearch):
                 ret = GridSearch_plot(trials_dicts, plot_info)
             else:
                 logger.info(f'Unsupport type of optimizer for plot')
