@@ -194,7 +194,7 @@ class ParslRunner:
                 trials = self.storage.getTrials(self.session, self.experiment_id)
                 trials_dicts = [trial.asdict() for trial in trials]
             except:
-                session.rollback()
+                self.session.rollback()
                 raise
             # finally:
             #     session.close()
