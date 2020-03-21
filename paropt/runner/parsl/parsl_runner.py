@@ -209,7 +209,8 @@ class ParslRunner:
                 logger.info(f'Unsupport type of optimizer for plot')
 
             if ret['success'] == False:
-                logger.info(f'Error when generating plot: {ret['error']}')
+                error = ret['error']
+                logger.info(f'Error when generating plot: {error}')
             else:
                 logger.info(f'Successfully generating plot')
         else:
