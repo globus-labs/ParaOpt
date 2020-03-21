@@ -10,7 +10,7 @@ import pandas as pd
 def GridSearch_plot_1D(data, plot_info):
     ret = {'success': False, 'error': None}
     x_vals = sorted(list(set(data[data['param_names'][0]])))
-    fig, axes = plt.subplot(figsize=(12, 6))
+    fig, axes = plt.subplots(figsize=(12, 6))
     for obj_name in data['obj_names']:
         y_val_by_x = {x: [] for x in x_vals}
         for idx, x_val in enumerate(data[data['param_names'][0]]):
