@@ -10,8 +10,8 @@ import pandas as pd
 def GridSearch_plot_1D(data, plot_info):
     ret = {'success': False, 'error': None}
     x_vals = sorted(list(set(data[data['param_names'][0]])))
-    fig, axes = plt.subplots(len(data['obj_names']), 1, figsize=(12, 6))
-    
+    fig, axes = plt.subplots(len(data['obj_names']), 1, figsize=(12, 8))
+    fig.suptitle(f'Experiment {plot_info["experiment_id"]}')
     for i, obj_name in enumerate(data['obj_names']):
         y_val_by_x = {x_val: [] for x_val in x_vals}
         for idx, x_val in enumerate(data[data['param_names'][0]]):
@@ -21,11 +21,11 @@ def GridSearch_plot_1D(data, plot_info):
         y_errs = [np.std(y_val_by_x[x_val]) for x_val in x_vals]
 
         axes[i].errorbar(x_vals, y_vals, y_errs)
-        axes.set_xlabel(data['param_names'][0])
-        axes.set_ylabel(obj_name)
+        axes[i].set_xlabel(data['param_names'][0])
+        axes[i].set_ylabel(obj_name)
     # plt.legend()
     plot_name = os.path.join(plot_info['plot_dir'], f'{plot_info["experiment_id"]}.png')
-    fig.subtitle(f'Experiment {plot_info["experiment_id"]}')
+    
     plt.savefig(plot_name)
     return {'success': True, 'error': plot_name}
 
@@ -50,8 +50,9 @@ def GridSearch_plot_2D(data, plot_info):
 def GridSearch_plot(raw_data, plot_info):
     ret = {'success': False, 'error': None}
     parameter_names = [i['parameter_name'] for i in raw_data[0]['parameter_configs']]
-    objective_names = list(raw_data[0]['obj_parameters'].keys()).append('obj_outcome')
-    
+    objective_names = list(raw_data[0]['obj_parameters'].keys())
+    objective_names.append('obj_outcome')
+    print(objective_names)
     if len(parameter_names) > 2:
         ret['error'] = 'more than 2 parameters'
         return ret
