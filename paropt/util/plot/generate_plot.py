@@ -21,11 +21,12 @@ def GridSearch_plot_1D(data, plot_info):
 
         axes.errorbar(x_vals, y_vals, y_errs, label=obj_name)
 
+    axes.set_xlabel(data['param_names'][0])
+    axes.set_ylabel('Objective')
     plt.legend()
-
     plot_name = os.path.join(plot_info['plot_dir'], f'{plot_info["experiment_id"]}.png')
     plt.savefig(plot_name)
-    return {'success': True, 'error': None}
+    return {'success': True, 'error': plot_name}
 
 
 def GridSearch_plot_2D(data, plot_info):

@@ -212,7 +212,7 @@ class ParslRunner:
             if ret['success'] == False:
                 logger.info(f'Error when generating plot: {ret["error"]}')
             else:
-                logger.info(f'Successfully generating plot')
+                logger.info(f'Successfully generating plot {ret["error"]}')
         else:
             logger.info(f'Skip generating plot')
     
