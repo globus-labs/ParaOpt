@@ -12,7 +12,7 @@ def GridSearch_plot_1D(data, plot_info):
     x_vals = sorted(list(set(data[data['param_names'][0]])))
     fig, axes = plt.subplots(figsize=(12, 6))
     for obj_name in data['obj_names']:
-        y_val_by_x = {x: [] for x in x_vals}
+        y_val_by_x = {x_val: [] for x_val in x_vals}
         for idx, x_val in enumerate(data[data['param_names'][0]]):
             y_val_by_x[x_val].append(data[obj_name][idx])
 
@@ -35,7 +35,7 @@ def GridSearch_plot_2D(data, plot_info):
 def GridSearch_plot(raw_data, plot_info):
     ret = {'success': False, 'error': None}
     parameter_names = [i['parameter_name'] for i in raw_data[0]['parameter_configs']]
-    objective_names = list(raw_data[0]['obj_parameters'])
+    objective_names = list(raw_data[0]['obj_parameters'].keys())
     
     if len(parameter_names) > 2:
         ret['error'] = 'more than 2 parameters'
