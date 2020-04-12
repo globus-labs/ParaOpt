@@ -9,12 +9,17 @@ def timeCommand(runConfig, **kwargs):
     ----------
     runConfig : RunConfig
         config for running the script
+
+    **kwargs : dict
+        dictionary that contains parameters for objective function
     
     Returns
     -------
     result : dict
-        Contains 'returncode', 'stdout', and 'obj_output' to indicate the result of the run
+        Contains 'returncode', 'stdout', 'obj_parameters', and 'obj_output' to indicate the result of the run
         If returncode is not 0, obj_output must be ignored.
+        obj_output: the result of objective function, which is the final result to optimize to minimum
+        obj_parameter: store the parameters used to calculate obj_output. which could be helpful afterwards.
     """
     import os
     import subprocess
@@ -90,18 +95,23 @@ def timeCommand(runConfig, **kwargs):
 
 @python_app
 def searchMatrix(runConfig, **kwargs):
-    """Time the main command script. Exits early on failure at any step (setup, main, finish)
+    """Find the optimal on a matrix. The script to run need only print the value in the matrix at some point
 
     Parameters
     ----------
     runConfig : RunConfig
         config for running the script
+
+    **kwargs : dict
+        dictionary that contains parameters for objective function
     
     Returns
     -------
     result : dict
-        Contains 'returncode', 'stdout', and 'obj_output' to indicate the result of the run
+        Contains 'returncode', 'stdout', 'obj_parameters', and 'obj_output' to indicate the result of the run
         If returncode is not 0, obj_output must be ignored.
+        obj_output: the result of objective function, which is the final result to optimize to minimum
+        obj_parameter: store the parameters used to calculate obj_output. which could be helpful afterwards.
     """
     import os
     import subprocess
@@ -160,19 +170,24 @@ def searchMatrix(runConfig, **kwargs):
 
 @python_app
 def variantCallerAccu(runConfig, **kwargs):
-    """Time the main command script. Exits early on failure at any step (setup, main, finish)
+    """Calculate the accuracy of variant caller. The scripts need to print caller_time, precision, and recall in order (setup, main, finish)
     with timeout
 
     Parameters
     ----------
     runConfig : RunConfig
         config for running the script
+
+    **kwargs : dict
+        dictionary that contains parameters for objective function
     
     Returns
     -------
     result : dict
-        Contains 'returncode', 'stdout', and 'obj_output' to indicate the result of the run
+        Contains 'returncode', 'stdout', 'obj_parameters', and 'obj_output' to indicate the result of the run
         If returncode is not 0, obj_output must be ignored.
+        obj_output: the result of objective function, which is the final result to optimize to minimum
+        obj_parameter: store the parameters used to calculate obj_output. which could be helpful afterwards.
     """
     import os
     import subprocess

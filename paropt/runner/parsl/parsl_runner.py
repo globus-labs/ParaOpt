@@ -26,7 +26,15 @@ class ParslRunner:
                 logs_root_dir='.',
                 plot_info={'draw_plot': False, 'plot_dir': '.'}
                 ):
-
+        """
+        obj_func: timeCmd, searchMatrix, variantCallerAccu, or self-defined objective function name
+        optimizer: optimizer instance
+        obj_func_params: the parameters (in a dict) to pass to objective function
+        storage: storage to use
+        experiment: experiment instance
+        logs_root_dir: directory to store logs
+        plot_info: whether draw plot and where to store the plots. only work with 1D and 2D gridsearch.
+        """
         self.plot_info = plot_info
         self.obj_func = obj_func
         if obj_func_params is None:

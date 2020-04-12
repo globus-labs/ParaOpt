@@ -15,6 +15,9 @@ logger = logging.getLogger(__name__)
 MAX_RETRY_SUGGEST = 10
 
 class RandomSearchOptimizer():
+    """
+    class of random search optimizer
+    """
     def __init__(self, pbounds, random_seed=None):
         self.pbounds = pbounds
         self.random_seed = random_seed
@@ -24,6 +27,9 @@ class RandomSearchOptimizer():
         self.max_outcome_parameters = None
 
     def suggest(self):
+        """
+        suggest next point
+        """
         suggested_dict = {name: np.random.uniform(low=ran[0], high=ran[1]) for name, ran in self.pbounds.items()}
         return suggested_dict
 
@@ -41,6 +47,16 @@ class RandomSearchOptimizer():
 
 class RandomSearch(BaseOptimizer):
     def __init__(self, n_iter=20, random_seed=None, budget=None, converge_thres=None, converge_steps=None):
+        """
+        Class  for using Random Search Optimizer
+        Parameters:
+        n_init: the number of initial trials
+        n_iter: the number of trials after initial trials
+        random_seed: random seed for randomization
+        budget: a time budget counted in second. next trial will not be performed if running time has excessed the budget. currently the budget can only be used with timeCmd function. 
+        converge_thres: a threshold to determine whether to continue next trials. to continue, current_trial_outcome / best_outcome_up_to_now <= converge_thres. work together with converge_steps.
+        converge_steps: the number of steps to stop the experiment. If for converge_steps steps, the converge_thres creteria is not satisfied, the experiment will be ceased.
+        """
 # These parameters are initialized by the runner
         # updated by setExperiment()
         self.optimizer = None
@@ -81,6 +97,9 @@ class RandomSearch(BaseOptimizer):
         return params_dict
 
     def _load(self):
+        """
+        load previous trial
+        """
         if self.previous_trials == []:
             return
 
@@ -215,6 +234,9 @@ class RandomSearch(BaseOptimizer):
 
 
     def _update_converge(self, trial):
+        """
+        update the converge steps
+        """
         best_out_param, best_out = self.getMax()
         if trial.outcome / float(best_out) <= self.converge_thres:
             self.converge_steps_count = 0
@@ -229,6 +251,9 @@ class RandomSearch(BaseOptimizer):
 
 
     def _update_budget(self, trial):
+        """
+        update budget
+        """
         self.budget -= -trial.outcome*86400 # count in second
         if self.budget <= 0:
             logger.exception(f'Reach budget')
