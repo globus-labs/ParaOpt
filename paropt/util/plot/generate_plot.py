@@ -8,6 +8,9 @@ import pandas as pd
 
 
 def GridSearch_plot_1D(data, plot_info):
+    """
+    function that draw 1D plot
+    """
     ret = {'success': False, 'error': None}
     x_vals = sorted(list(set(data[data['param_names'][0]])))
     
@@ -31,6 +34,9 @@ def GridSearch_plot_1D(data, plot_info):
 
 
 def GridSearch_plot_2D(data, plot_info):
+    """
+    function that draw 2D plot
+    """
     ret = {'success': False, 'error': None}
     x_vals = sorted(list(set(data[data['param_names'][0]])))
     y_vals = sorted(list(set(data[data['param_names'][1]])))
@@ -78,11 +84,24 @@ def GridSearch_plot_2D(data, plot_info):
 
 
 def GridSearch_plot(raw_data, plot_info):
+    """
+    draw plots for grid search experiment
+
+    parameters:
+    raw_data: list
+        data read by experiment
+    plot_info: dict
+        some parameters that is used. The following need to be set:
+            'draw_plot': True
+            'plot_dir': '.'
+    """
+
     ret = {'success': False, 'error': None}
+    
+    # clean data
     parameter_names = [i['parameter_name'] for i in raw_data[0]['parameter_configs']]
     objective_names = list(raw_data[0]['obj_parameters'].keys())
     objective_names.append('obj_outcome')
-    # print(objective_names)
     if len(parameter_names) > 2:
         ret['error'] = 'more than 2 parameters'
         return ret
@@ -104,6 +123,7 @@ def GridSearch_plot(raw_data, plot_info):
 
         data['obj_outcome'].append(trial['outcome'])
 
+    # draw plots
     if len(parameter_names) == 1:
         ret = GridSearch_plot_1D(data, plot_info)
     else:

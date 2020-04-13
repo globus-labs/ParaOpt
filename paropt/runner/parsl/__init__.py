@@ -9,7 +9,6 @@ __all__ = [
   'ParslRunner',
   'local_config',
   'timeCmd',
-  # 'timeCmdLimit',
   'variantCallerAccu',
   'searchMatrix'
 ]

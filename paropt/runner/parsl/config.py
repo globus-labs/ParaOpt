@@ -82,7 +82,7 @@ def parslConfigFromCompute(compute):
     )
 
   elif isinstance(compute, PBSProCompute):
-    # NOTE: Assumes the paropt is being run on an EC2 instance with access to metadata service
+    # NOTE: Assumes the paropt is being run on an PBS node with access to metadata service
     try:
       parsl_config = Config(
         executors=[

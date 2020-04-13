@@ -70,13 +70,21 @@ class CoordinateSearch(BaseOptimizer):
     def __init__(self, n_init=1, n_iter=20, random_seed=None, budget=None, converge_thres=None, converge_steps=None):
         """
         Class  for using Coordinate Search Optimizer
+
         Parameters:
-        n_init: the number of initial trials
-        n_iter: the number of trials after initial trials
-        random_seed: random seed for randomization
-        budget: a time budget counted in second. next trial will not be performed if running time has excessed the budget. currently the budget can only be used with timeCmd function. 
-        converge_thres: a threshold to determine whether to continue next trials. to continue, current_trial_outcome / best_outcome_up_to_now <= converge_thres. work together with converge_steps.
-        converge_steps: the number of steps to stop the experiment. If for converge_steps steps, the converge_thres creteria is not satisfied, the experiment will be ceased.
+        ----------------
+        n_init: int
+            the number of initial trials
+        n_iter: int
+            the number of trials after initial trials
+        random_seed: int
+            random seed for randomization
+        budget: int
+            a time budget counted in second. next trial will not be performed if running time has excessed the budget. currently the budget can only be used with timeCmd function. 
+        converge_thres: float
+            a threshold to determine whether to continue next trials. to continue, current_trial_outcome / best_outcome_up_to_now <= converge_thres. work together with converge_steps.
+        converge_steps: int
+            the number of steps to stop the experiment. If for converge_steps steps, the converge_thres creteria is not satisfied, the experiment will be ceased.
         """
 # These parameters are initialized by the runner
         # updated by setExperiment()
@@ -128,12 +136,12 @@ class CoordinateSearch(BaseOptimizer):
 
         for trial in self.previous_trials:
             params_dict = self._trialParamsToDict(trial)
-            logger.info(f'Registering: {params_dict}, {trial.outcome}')
+            logger.info(f'Registering: {params_dict}, {trial.outcome}\n')
             try:
                 self.register(trial) # update optimizer all by wrapped register so that automatically update total_trials/previous_trials
             except KeyError:
                 logger.warning(
-                    f"Config already registered, ignoring; config: {params_dict}, outcome: {trial.outcome}"
+                    f"Config already registered, ignoring; config: {params_dict}, outcome: {trial.outcome}\n"
                 )
     
     def _configDictToParameterConfigs(self, config_dict):
@@ -166,18 +174,16 @@ class CoordinateSearch(BaseOptimizer):
         """
         cur_config = self._parameterConfigToString(parameter_configs)
         if cur_config in self.visited_config:
-            logger.warning(f'trying to update seen configuration in CoordinateSearch_optimizer._update_visited_config, existing one is {self._trialParamsToDict(self.all_trials[self.visited_config[cur_config]])}, new one is {self._parameterConfigsToConfigDict(parameter_configs)}')
+            logger.warning(f'trying to update seen configuration in CoordinateSearch_optimizer._update_visited_config, existing one is {self._trialParamsToDict(self.all_trials[self.visited_config[cur_config]])}, new one is {self._parameterConfigsToConfigDict(parameter_configs)}\n')
 
         else:
             self.visited_config[cur_config] = len(self.all_trials) - 1
 
     def _getTrialWithParameterConfigs(self, parameter_configs):
         """Given a list of parameter configs, it returns a trial from previous_trials or None if not found"""
-        # TODO: this should check self.previous_trials to find a trial that used the provided configs
-        # FIXME: This function is unimplemented, functionally acting like every parameter config is unique
         cur_config = self._parameterConfigToString(parameter_configs)
         if cur_config in self.visited_config:
-            logger.warning(f'find existing trial in CoordinateSearch_optimizer._getTrialWithParameterConfigs, existing one is {self._trialParamsToDict(self.all_trials[self.visited_config[cur_config]])}, new one is {self._parameterConfigsToConfigDict(parameter_configs)}')
+            logger.warning(f'find existing trial in CoordinateSearch_optimizer._getTrialWithParameterConfigs, existing one is {self._trialParamsToDict(self.all_trials[self.visited_config[cur_config]])}, new one is {self._parameterConfigsToConfigDict(parameter_configs)}\n')
             return self.all_trials[self.visited_config[cur_config]]
         return None
 
@@ -198,10 +204,11 @@ class CoordinateSearch(BaseOptimizer):
         trial = self._getTrialWithParameterConfigs(param_configs)
         n_suggests = 0
         while trial != None and n_suggests < MAX_RETRY_SUGGEST:
-            self.using_budget_flag = False
-            # logger.info(f"Retrying suggest: Non-unique set of ParameterConfigs: {param_configs}")
             # This set of configurations have been used before
             # register a new trail with same outcome but with our suggested (float) values
+            
+            self.using_budget_flag = False # this register does not count in budget
+
             dup_trial = Trial(
                 parameter_configs=param_configs,
                 outcome=trial.outcome,
@@ -209,8 +216,9 @@ class CoordinateSearch(BaseOptimizer):
                 experiment_id=trial.experiment_id,
                 obj_parameters={},
             )
-            self.register(dup_trial)
-            # get another suggestion from updated model
+            self.register(dup_trial) # register this trial
+
+            # get another suggestion from updated model and check
             config_dict = self.optimizer.suggest()
             param_configs = self._configDictToParameterConfigs(config_dict)
             trial = self._getTrialWithParameterConfigs(param_configs)
@@ -218,8 +226,7 @@ class CoordinateSearch(BaseOptimizer):
 
         if n_suggests == MAX_RETRY_SUGGEST:
             logger.warning(f'Meet maximum retry suggest {MAX_RETRY_SUGGEST}')
-            raise Exception(f"BayesOpt failed to find untested config after {n_suggests} attempts. "
-                                            f"Consider increasing the utility function kappa value")
+            raise Exception(f"BayesOpt failed to find untested config after {n_suggests} attempts. Consider increasing the utility function kappa value\n")
         self.using_budget_flag = True
         return param_configs
     
@@ -271,7 +278,7 @@ class CoordinateSearch(BaseOptimizer):
             self.converge_steps_count += 1
         
         if self.converge_steps_count >= self.converge_steps:
-            logger.exception(f'Meet creteria of converging')
+            logger.exception(f'Meet creteria of converging\n')
             return -1
         else:
             return 0
@@ -283,7 +290,7 @@ class CoordinateSearch(BaseOptimizer):
         """
         self.budget -= -trial.outcome*86400 # count in second
         if self.budget <= 0:
-            logger.exception(f'Reach budget')
+            logger.exception(f'Reach budget\n')
             return -1
         else:
             return 0

@@ -27,13 +27,20 @@ class ParslRunner:
                 plot_info={'draw_plot': False, 'plot_dir': '.'}
                 ):
         """
-        obj_func: timeCmd, searchMatrix, variantCallerAccu, or self-defined objective function name
+        obj_func: string
+            'timeCmd', 'searchMatrix', 'variantCallerAccu', or self-defined objective function name
         optimizer: optimizer instance
-        obj_func_params: the parameters (in a dict) to pass to objective function
-        storage: storage to use
+            optimizer instance. Bayesian, randomsearch, coordinatesearch, gridsearch, or self-defined optimizer
+        obj_func_params: dict
+            the parameters to pass to objective function
+        storage: storage instance
+            storage to use
         experiment: experiment instance
-        logs_root_dir: directory to store logs
-        plot_info: whether draw plot and where to store the plots. only work with 1D and 2D gridsearch.
+            experiment instance that contains the information for the experiment
+        logs_root_dir: string
+            directory to store logs
+        plot_info: dict
+            whether draw plot and where to store the plots. only work with 1D and 2D gridsearch.
         """
         self.plot_info = plot_info
         self.obj_func = obj_func
@@ -120,7 +127,7 @@ class ParslRunner:
         result = None
         for idx, parameter_configs in enumerate(self.optimizer):
             try:
-                logger.info(f'Writing script with configs {parameter_configs}')
+                logger.info(f'Writing script with configs {parameter_configs}\n')
                 command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
                 if self.experiment.setup_template_string != None:
                     _, setup_script_content = self._writeScript(self.experiment.setup_template_string, parameter_configs, 'setup')
@@ -130,10 +137,11 @@ class ParslRunner:
                     _, finish_script_content = self._writeScript(self.experiment.finish_template_string, parameter_configs, 'finish')
                 else:
                     finish_script_content = None
+                
                 # set warm-up experiments 
                 if initialize_flag:
                     initialize_flag = False
-                    logger.info(f'Starting initializing trial with script at {command_script_path}')
+                    logger.info(f'[Initial trial for warm-up] Starting trial with script at {command_script_path}\n')
                     runConfig = paropt.runner.RunConfig(
                         command_script_content=command_script_content,
                         experiment_dict=self.experiment.asdict(),
@@ -147,8 +155,8 @@ class ParslRunner:
                     # result = self.obj_func(runConfig, **self.obj_func_params).result()
                     result = self.obj_func(runConfig, **initializing_func_param).result()
 
-
-                logger.info(f'Starting trial with script at {command_script_path}')
+                # start trials
+                logger.info(f'Starting trial with script at {command_script_path}\n')
                 runConfig = paropt.runner.RunConfig(
                     command_script_content=command_script_content,
                     experiment_dict=self.experiment.asdict(),
@@ -157,7 +165,9 @@ class ParslRunner:
                 )
                 result = None
                 result = self.obj_func(runConfig, **self.obj_func_params).result()
+
                 self._validateResult(parameter_configs, result)
+
                 trial = Trial(
                     outcome=result['obj_output'],
                     parameter_configs=parameter_configs,
@@ -167,9 +177,10 @@ class ParslRunner:
                 )
                 self.storage.saveResult(self.session, trial)
                 self.optimizer.register(trial)
+                
                 self.run_result['success'] = True and self.run_result['success']
                 flag = flag and self.run_result['success']
-                self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Successfully completed trials {idx} for experiment')
+                self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Successfully completed trials {idx} for experiment\n')
 
             except Exception as e:
                 err_traceback = traceback.format_exc()
@@ -182,12 +193,12 @@ class ParslRunner:
                         obj_parameters=result['obj_parameters'],
                     )
                     self.optimizer.register(trial)
-                    logger.exception(f'time out')
+                    logger.exception(f'time out\n')
                     self.storage.saveResult(self.session, trial)
                     self.run_result['success'] = False
-                    self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
+                    self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}\n')
 
-                else:
+                else: # do have error
                     trial = Trial(
                         outcome=10000000,
                         parameter_configs=parameter_configs,
@@ -197,36 +208,35 @@ class ParslRunner:
                     )
                     self.storage.saveResult(self.session, trial)
                     self.run_result['success'] = False
-                    self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}')
+                    self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}\n')
         
-        logger.info(f'Finished; Run result: {self.run_result}')
+        logger.info(f'Finished; Run result: {self.run_result}\n')
+        
+        # plot part
         if self.plot_info['draw_plot']:
-            # session = db_storage.Session()
             try:
                 trials = self.storage.getTrials(self.session, self.experiment.id)
                 trials_dicts = [trial.asdict() for trial in trials]
             except:
                 self.session.rollback()
                 raise
-            # finally:
-            #     session.close()
-            # return jsonify(trials), 200
-            logger.info(f'res: {trials_dicts}')
+
+            logger.info(f'res: {trials_dicts}\n')
             if isinstance(self.optimizer, GridSearch):
                 ret = GridSearch_plot(trials_dicts, self.plot_info)
             else:
-                logger.info(f'Unsupport type of optimizer for plot')
+                logger.info(f'Unsupport type of optimizer for plot\n')
 
             if ret['success'] == False:
-                logger.info(f'Error when generating plot: {ret["error"]}')
+                logger.info(f'Error when generating plot: {ret["error"]}\n')
             else:
-                logger.info(f'Successfully generating plot {ret["error"]}')
+                logger.info(f'Successfully generating plot {ret["error"]}\n')
         else:
-            logger.info(f'Skip generating plot')
+            logger.info(f'Skip generating plot\n')
     
     def cleanup(self):
         """Cleanup DFK and parsl"""
-        logger.info('Cleaning up parsl DFK')
+        logger.info('Cleaning up parsl DFK\n')
         self._dfk.cleanup()
         parsl.clear()
     

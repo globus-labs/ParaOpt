@@ -14,8 +14,8 @@ class GridSearch(BaseOptimizer):
         self.max_outcome = -maxsize
         self.grid_parameter_configs = []
         self.num_configs_per_param = num_configs_per_param
-        # if self.num_configs_per_param < 2:
-        #     raise Exception("num_configs_per_param must be >= 2")
+
+        # check the number of steps of each parameter
         if any(self.num_configs_per_param) < 1:
             raise Exception("num_configs_per_param must be >= 1")
 
@@ -23,6 +23,8 @@ class GridSearch(BaseOptimizer):
         parameters = Parameter.parametersToDict(experiment.parameters)
         
         parameters_linearly_spaced_vals = []
+
+        # parameter start from the lower bound to higher bound
         for idx, parameter in enumerate(experiment.parameters):
             ncpp = self.num_configs_per_param[idx]
             # step_size = (parameter.maximum - parameter.minimum) / (ncpp - 1)

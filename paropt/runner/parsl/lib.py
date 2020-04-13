@@ -243,26 +243,20 @@ def variantCallerAccu(runConfig, **kwargs):
             # the output of utility, which is used by optimizer
             obj_output = objective(obj_parameters['caller_time'], f1_obj(obj_parameters['precision'], obj_parameters['recall']))
 
-            # obj_output = f1_obj(obj_parameters['precision'], obj_parameters['recall'])
             ret_dic['obj_parameters'] = obj_parameters
             ret_dic['obj_output'] = obj_output
             
-            # timeout_output = objective(timeout, 0)
             return ret_dic
-            # return {'returncode': proc.returncode, 'stdout': outs.decode(), 'obj_output': total_time, 'obj_parameters': obj_parameters}
         except subprocess.TimeoutExpired:
             obj_parameters = {'running_time': timeout, 'precision': 0, 'recall': 0, 'caller_time': timeout}
-            # obj_output = objective(obj_parameters['caller_time'], obj_parameters['precision'])
             obj_output = f1_obj(obj_parameters['precision'], obj_parameters['recall'])
 
             ret_dic['obj_output'] = obj_output
             ret_dic['obj_parameters'] = obj_parameters
             ret_dic['returncode'] = timeout_returncode
             return ret_dic
-            # return {'returncode': timeout_returncode, 'stdout': f'Timeout', 'obj_output': timeout_output, 'obj_parameters': obj_parameters} # run time = -1 means timeout
         except:
             return ret_dic
-            # return {'returncode': proc.returncode, 'stdout': outs.decode('utf-8'), 'obj_output': total_time, 'obj_parameters': obj_parameters}
 
 
     try:
