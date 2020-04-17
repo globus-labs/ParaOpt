@@ -27,8 +27,8 @@ class ParslRunner:
                 plot_info={'draw_plot': False, 'plot_dir': '.'}
                 ):
         """
-        obj_func: string
-            'timeCmd', 'searchMatrix', 'variantCallerAccu', or self-defined objective function name
+        obj_func: objective function type
+            timeCmd, searchMatrix, variantCallerAccu, or self-defined objective function
         optimizer: optimizer instance
             optimizer instance. Bayesian, randomsearch, coordinatesearch, gridsearch, or self-defined optimizer
         obj_func_params: dict
