@@ -24,7 +24,8 @@ class ParslRunner:
                 storage=None,
                 experiment=None,
                 logs_root_dir='.',
-                plot_info={'draw_plot': False, 'plot_dir': '.'}
+                plot_info={'draw_plot': False, 'plot_dir': '.'},
+                baseline_experiment=None
                 ):
         """
         obj_func: objective function type
@@ -41,6 +42,8 @@ class ParslRunner:
             directory to store logs
         plot_info: dict
             whether draw plot and where to store the plots. only work with 1D and 2D gridsearch.
+        baseline_experiment: experiment instance
+            experiment instance that contains the information for the baseline experiment. The baseline experiment will be executed once
         """
         self.plot_info = plot_info
         self.obj_func = obj_func
@@ -60,6 +63,13 @@ class ParslRunner:
         self.command = experiment.command_template_string
 
         self.plot_info['experiment_id'] = self.experiment.id
+
+        # get baseline experiment
+        self.baseline = False
+        if baseline_experiment is not None:
+            self.baseline_obj_output = None
+            self.baseline = True
+            self.baseline_command = baseline_experiment.command_template_string
 
         # setup compute
         self.compute = self.experiment.compute
@@ -112,6 +122,20 @@ class ParslRunner:
             f.write(script)
         return script_path, script
     
+
+    def _createScript(self, setup_string, command, finish_string, parameter_configs):
+        command_script_path, command_script_content = self._writeScript(command, parameter_configs, 'command')
+        if setup_string != None:
+            _, setup_script_content = self._writeScript(setup_string, parameter_configs, 'setup')
+        else:
+            setup_script_content = None
+        if finish_string != None:
+            _, finish_script_content = self._writeScript(finish_string, parameter_configs, 'finish')
+        else:
+            finish_script_content = None
+        return [setup_script_content, command_script_path, command_script_content, finish_script_content]
+    
+
     def run(self, debug=False):
         """
         Run trials provided by the optimizer while saving results.
@@ -128,16 +152,17 @@ class ParslRunner:
         for idx, parameter_configs in enumerate(self.optimizer):
             try:
                 logger.info(f'Writing script with configs {parameter_configs}\n')
-                command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
-                if self.experiment.setup_template_string != None:
-                    _, setup_script_content = self._writeScript(self.experiment.setup_template_string, parameter_configs, 'setup')
-                else:
-                    setup_script_content = None
-                if self.experiment.finish_template_string != None:
-                    _, finish_script_content = self._writeScript(self.experiment.finish_template_string, parameter_configs, 'finish')
-                else:
-                    finish_script_content = None
-                
+                # command_script_path, command_script_content = self._writeScript(self.command, parameter_configs, 'command')
+                # if self.experiment.setup_template_string != None:
+                #     _, setup_script_content = self._writeScript(self.experiment.setup_template_string, parameter_configs, 'setup')
+                # else:
+                #     setup_script_content = None
+                # if self.experiment.finish_template_string != None:
+                #     _, finish_script_content = self._writeScript(self.experiment.finish_template_string, parameter_configs, 'finish')
+                # else:
+                #     finish_script_content = None
+                setup_script_content, command_script_path, command_script_content, finish_script_content = self._createScript(self.experiment.setup_template_string, self.command, self.experiment.finish_template_string, parameter_configs)
+
                 # set warm-up experiments 
                 if initialize_flag:
                     initialize_flag = False
@@ -154,8 +179,35 @@ class ParslRunner:
                     initializing_func_param['timeout'] = 300
                     # result = self.obj_func(runConfig, **self.obj_func_params).result()
                     result = self.obj_func(runConfig, **initializing_func_param).result()
+                
+                # run baseline experiment
+                if self.baseline:
+                    self.baseline = False
+                    logger.info(f'Creating baseline trial')
+                    baseline_setup_script_content, baseline_command_script_path, baseline_command_script_content, baseline_finish_script_content = self._createScript(self.experiment.setup_template_string, self.baseline_command, self.experiment.finish_template_string, parameter_configs)
 
-                # start trials
+                    logger.info(f'Starting baseline trial with script at {baseline_command_script_path}\n')
+                    runConfig = paropt.runner.RunConfig(
+                        command_script_content=baseline_command_script_content,
+                        experiment_dict=self.baseline_experiment.asdict(),
+                        setup_script_content=baseline_setup_script_content,
+                        finish_script_content=baseline_finish_script_content,
+                    )
+                    result = None
+                    result = self.obj_func(runConfig, **self.obj_func_params).result()
+                    self._validateResult(parameter_configs, result)
+                    result['obj_parameters']['wrt_baseline'] = 1
+                    self.baseline_obj_output = result['obj_output']
+                    trial = Trial(
+                        outcome=result['obj_output'],
+                        parameter_configs=parameter_configs,
+                        run_number=self.run_number,
+                        experiment_id=self.experiment.id,
+                        obj_parameters=result['obj_parameters'],
+                    )
+                    self.storage.saveResult(self.session, trial)
+
+                # start normal trials
                 logger.info(f'Starting trial with script at {command_script_path}\n')
                 runConfig = paropt.runner.RunConfig(
                     command_script_content=command_script_content,
@@ -167,7 +219,7 @@ class ParslRunner:
                 result = self.obj_func(runConfig, **self.obj_func_params).result()
 
                 self._validateResult(parameter_configs, result)
-
+                result['obj_parameters']['wrt_baseline'] = result['obj_output'] / self.baseline_obj_output
                 trial = Trial(
                     outcome=result['obj_output'],
                     parameter_configs=parameter_configs,
@@ -185,6 +237,7 @@ class ParslRunner:
             except Exception as e:
                 err_traceback = traceback.format_exc()
                 if result is not None and result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
+                    result['obj_parameters']['wrt_baseline'] = result['obj_output'] / self.baseline_obj_output
                     trial = Trial(
                         outcome=result['obj_output'],
                         parameter_configs=parameter_configs,
