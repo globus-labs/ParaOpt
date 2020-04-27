@@ -67,6 +67,7 @@ class ParslRunner:
         # get baseline experiment
         self.baseline = False
         if baseline_experiment is not None:
+            self.baseline_experiment = baseline_experiment
             self.baseline_obj_output = None
             self.baseline = True
             self.baseline_command = baseline_experiment.command_template_string
