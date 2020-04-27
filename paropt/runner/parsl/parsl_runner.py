@@ -66,11 +66,32 @@ class ParslRunner:
 
         # get baseline experiment
         self.baseline = False
+        self.get_baseline_output = False
+        self.baseline_experiment = None
         if baseline_experiment is not None:
             self.baseline_experiment = baseline_experiment
             self.baseline_obj_output = None
             self.baseline = True
             self.baseline_command = baseline_experiment.command_template_string
+            baseline_trial = None
+            for trial in self.experiment.trials:
+                flag = True
+                for parameter_config in trial.parameter_configs:
+                    cur_name = parameter_config.parameter.name
+                    cur_val = parameter_config.value
+                    tmp_flag = False
+                    for baseline_parameter_config in self.baseline_experiment.parameters:
+                        if baseline_parameter_config.name == cur_name and baseline_parameter_config.minimum == cur_val:
+                            tmp_flag = True
+                    flag = flag & tmp_flag
+                if flag:
+                    baseline_trial = trial
+                    break
+
+            if baseline_trial is not None:
+                self.baseline_obj_output = baseline_trial.outcome
+                self.get_baseline_output = True
+
 
         # setup compute
         self.compute = self.experiment.compute
@@ -182,10 +203,14 @@ class ParslRunner:
                     result = self.obj_func(runConfig, **initializing_func_param).result()
                 
                 # run baseline experiment
-                if self.baseline:
+                if self.baseline and self.get_baseline_output is False:
                     self.baseline = False
                     logger.info(f'Creating baseline trial')
-                    baseline_setup_script_content, baseline_command_script_path, baseline_command_script_content, baseline_finish_script_content = self._createScript(self.experiment.setup_template_string, self.baseline_command, self.experiment.finish_template_string, parameter_configs)
+                    baseline_parameter_configs = []
+                    for parameter in self.baseline_experiment.parameters:
+                        baseline_parameter_configs.append(ParameterConfig(parameter=parameter, value=parameter.minimum))
+
+                    baseline_setup_script_content, baseline_command_script_path, baseline_command_script_content, baseline_finish_script_content = self._createScript(self.experiment.setup_template_string, self.baseline_command, self.experiment.finish_template_string, baseline_parameter_configs)
 
                     logger.info(f'Starting baseline trial with script at {baseline_command_script_path}\n')
                     runConfig = paropt.runner.RunConfig(
@@ -196,17 +221,18 @@ class ParslRunner:
                     )
                     result = None
                     result = self.obj_func(runConfig, **self.obj_func_params).result()
-                    self._validateResult(parameter_configs, result)
+                    self._validateResult(baseline_parameter_configs, result)
                     result['obj_parameters']['wrt_baseline'] = 1
                     self.baseline_obj_output = result['obj_output']
                     trial = Trial(
                         outcome=result['obj_output'],
-                        parameter_configs=parameter_configs,
+                        parameter_configs=baseline_parameter_configs,
                         run_number=self.run_number,
                         experiment_id=self.experiment.id,
                         obj_parameters=result['obj_parameters'],
                     )
                     self.storage.saveResult(self.session, trial)
+                    self.get_baseline_output = True
 
                 # start normal trials
                 logger.info(f'Starting trial with script at {command_script_path}\n')
@@ -220,7 +246,7 @@ class ParslRunner:
                 result = self.obj_func(runConfig, **self.obj_func_params).result()
 
                 self._validateResult(parameter_configs, result)
-                if self.baseline_experiment is not None:
+                if self.get_baseline_output:
                     result['obj_parameters']['wrt_baseline'] = result['obj_output'] / self.baseline_obj_output
                 trial = Trial(
                     outcome=result['obj_output'],
@@ -239,7 +265,7 @@ class ParslRunner:
             except Exception as e:
                 err_traceback = traceback.format_exc()
                 if result is not None and result['stdout'] == 'Timeout': # for timeCommandLimitTime in lib, timeout
-                    if self.baseline_experiment is not None:
+                    if self.get_baseline_output:
                         result['obj_parameters']['wrt_baseline'] = result['obj_output'] / self.baseline_obj_output
                     trial = Trial(
                         outcome=result['obj_output'],

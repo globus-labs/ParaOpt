@@ -178,7 +178,7 @@ class BayesianOptimizer(BaseOptimizer):
                 outcome=trial.outcome,
                 run_number=trial.run_number,
                 experiment_id=trial.experiment_id,
-                obj_parameters={},
+                obj_parameters=trial.obj_parameters,
             )
 
             self.register(dup_trial) # register this trial
