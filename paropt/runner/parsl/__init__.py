@@ -4,11 +4,13 @@ from .lib import timeCommand as timeCmd
 # from .lib import timeCommandLimitTime as timeCmdLimit
 from .lib import variantCallerAccu as variantCallerAccu
 from .lib import searchMatrix as searchMatrix
+from .lib import constrainedObjective as constrainedObjective
 
 __all__ = [
   'ParslRunner',
   'local_config',
   'timeCmd',
   'variantCallerAccu',
-  'searchMatrix'
+  'searchMatrix',
+  'constrainedObjective'
 ]

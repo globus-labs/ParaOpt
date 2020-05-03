@@ -260,7 +260,7 @@ class ParslRunner:
                 
                 self.run_result['success'] = True and self.run_result['success']
                 flag = flag and self.run_result['success']
-                self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Successfully completed trials {idx} for experiment\n')
+                self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {ParameterConfig.configsToDict(parameter_configs)}'] = (f'Successfully completed trials {idx} for experiment, output is {result}')
 
             except Exception as e:
                 err_traceback = traceback.format_exc()
@@ -278,7 +278,7 @@ class ParslRunner:
                     logger.exception(f'time out\n')
                     self.storage.saveResult(self.session, trial)
                     self.run_result['success'] = False
-                    self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}\n')
+                    self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx} due to timeout:\nError: {e};\t{err_traceback};\toutput is {result}')
 
                 else: # do have error
                     trial = Trial(
@@ -290,7 +290,7 @@ class ParslRunner:
                     )
                     self.storage.saveResult(self.session, trial)
                     self.run_result['success'] = False
-                    self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e}\n{err_traceback}\n')
+                    self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e};\t{err_traceback};\toutput is {result}')
         
         logger.info(f'Finished; Run result: {self.run_result}\n')
         
