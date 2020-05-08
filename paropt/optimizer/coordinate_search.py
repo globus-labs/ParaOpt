@@ -137,6 +137,9 @@ class CoordinateSearch(BaseOptimizer):
         for trial in self.previous_trials:
             params_dict = self._trialParamsToDict(trial)
             logger.info(f'Registering: {params_dict}, {trial.outcome}\n')
+            if trial.outcome == 10000000:
+                logger.info(f'Skip error trial\n')
+                continue
             try:
                 self.register(trial) # update optimizer all by wrapped register so that automatically update total_trials/previous_trials
             except KeyError:
