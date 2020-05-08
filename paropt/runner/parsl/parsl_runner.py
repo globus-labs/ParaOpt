@@ -25,7 +25,8 @@ class ParslRunner:
                 experiment=None,
                 logs_root_dir='.',
                 plot_info={'draw_plot': False, 'plot_dir': '.'},
-                baseline_experiment=None
+                baseline_experiment=None,
+                save_fail_trial=False
                 ):
         """
         obj_func: objective function type
@@ -288,7 +289,8 @@ class ParslRunner:
                         experiment_id=self.experiment.id,
                         obj_parameters={},
                     )
-                    self.storage.saveResult(self.session, trial)
+                    if save_fail_trial:
+                        self.storage.saveResult(self.session, trial)
                     self.run_result['success'] = False
                     self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e};\t{err_traceback};\toutput is {result}')
         
