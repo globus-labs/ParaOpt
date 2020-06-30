@@ -5,6 +5,7 @@ from .lib import timeCommand as timeCmd
 from .lib import variantCallerAccu as variantCallerAccu
 from .lib import searchMatrix as searchMatrix
 from .lib import constrainedObjective as constrainedObjective
+from .lib import localConstrainedObjective as localConstrainedObjective
 
 __all__ = [
   'ParslRunner',
@@ -12,5 +13,6 @@ __all__ = [
   'timeCmd',
   'variantCallerAccu',
   'searchMatrix',
-  'constrainedObjective'
+  'constrainedObjective',
+  'localConstrainedObjective'
 ]
