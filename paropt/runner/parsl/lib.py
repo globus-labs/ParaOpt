@@ -376,10 +376,11 @@ def constrainedObjective(runConfig, **kwargs):
         return 2*precision*recall/(precision+recall)
 
     def default(time, f1):
-        time = time / 60 / 60
-        if precision + recall == 0:
-            return 0
-        return 2*precision*recall/(precision+recall)
+        return f1
+        # time = time / 60 / 60
+        # if precision + recall == 0:
+        #     return 0
+        # return 2*precision*recall/(precision+recall)
 
     def timeScript(script_name, script_content):
         """Helper for writing and running a script"""
@@ -543,6 +544,7 @@ def localConstrainedObjective(runConfig, **kwargs):
         return 2*precision*recall/(precision+recall)
 
     def default(time, f1):
+        return f1
         time = time / 60 / 60
         if precision + recall == 0:
             return 0
