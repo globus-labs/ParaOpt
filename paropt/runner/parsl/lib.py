@@ -571,7 +571,7 @@ def localConstrainedObjective(runConfig, **kwargs):
             # caller time here in sec
             str_res = outs.decode('utf-8')
             res = str_res.strip().split()
-            obj_parameters = {'running_time': float(res[-3]), 'precision': float(res[-3]), 'recall': float(res[-2]), 'caller_time': float(res[-3])}
+            obj_parameters = {'running_time': float(res[-1]), 'precision': float(res[-3]), 'recall': float(res[-2]), 'caller_time': float(res[-1])}
             
             # the output of utility, which is used by optimizer
             if obj_func == 'objective':
