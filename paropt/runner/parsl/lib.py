@@ -411,7 +411,7 @@ def constrainedObjective(runConfig, **kwargs):
                 obj_output = objective(obj_parameters['caller_time'], f1_obj(obj_parameters['precision'], obj_parameters['recall']))
             elif obj_func == 'default':
                 obj_output = default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
-            else if obj_func == 'boundary_default':
+            elif obj_func == 'boundary_default':
                 obj_output = boundary_default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
 
             ret_dic['obj_parameters'] = obj_parameters
@@ -424,7 +424,7 @@ def constrainedObjective(runConfig, **kwargs):
                 obj_output = objective(obj_parameters['caller_time'], f1_obj(obj_parameters['precision'], obj_parameters['recall']))
             elif obj_func == 'default':
                 obj_output = default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
-            else if obj_func == 'boundary_default':
+            elif obj_func == 'boundary_default':
                 obj_output = boundary_default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
 
             ret_dic['obj_output'] = obj_output
@@ -578,7 +578,7 @@ def localConstrainedObjective(runConfig, **kwargs):
                 obj_output = objective(obj_parameters['caller_time'], f1_obj(obj_parameters['precision'], obj_parameters['recall']))
             elif obj_func == 'default':
                 obj_output = default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
-            else if obj_func == 'boundary_default':
+            elif obj_func == 'boundary_default':
                 obj_output = boundary_default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
 
             ret_dic['obj_parameters'] = obj_parameters
@@ -591,7 +591,7 @@ def localConstrainedObjective(runConfig, **kwargs):
                 obj_output = objective(obj_parameters['caller_time'], f1_obj(obj_parameters['precision'], obj_parameters['recall']))
             elif obj_func == 'default':
                 obj_output = default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
-            else if obj_func == 'boundary_default':
+            elif obj_func == 'boundary_default':
                 obj_output = boundary_default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
 
             ret_dic['obj_output'] = obj_output
