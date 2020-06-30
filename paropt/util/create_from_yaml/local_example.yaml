@@ -1,0 +1,43 @@
+experiment:
+  tool_name: localExample
+  parameters:
+  - name: paramA
+    type: int
+    minimum: 1
+    maximum: 10
+  - name: paramB
+    type: int
+    minimum: 1
+    maximum: 10
+  # use local compute
+  compute:
+    type: local
+    max_threads: 7
+  setup_template_string: |
+    #!/bin/bash
+    echo "Doing setup..."
+    sleep 2
+  command_template_string: |
+    #!/bin/bash
+    echo "Sleeping for ${paramA} + ${paramB} seconds!"
+    sleep $(( ${paramA} + ${paramB} ))
+  finish_template_string: |
+    #!/bin/bash
+    echo "Running teardown..."
+    sleep 2
+
+# Example for running a grid search
+optimizer:
+  type: grid
+  # specifies the number of configurations for each parameter
+  # e.g. if you have parameters A and B, and num_configs_per_param is 2,
+  # it will be 2 possible values for each parameter, X1 and X2. Then the cartesian product
+  # is taken of all parameters. So in the example it'd run 4 times (A1 B1), (A2 B1), (A1 B2), (A2 B2)
+  num_configs_per_param:
+    - 2
+    - 2
+    
+objective: 
+  obj_name: timeCmd
+  obj_params: 
+    # timeout: 0
