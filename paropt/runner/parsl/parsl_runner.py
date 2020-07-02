@@ -47,6 +47,7 @@ class ParslRunner:
             experiment instance that contains the information for the baseline experiment. The baseline experiment will be executed once
         """
         self.plot_info = plot_info
+        self.save_fail_trial = save_fail_trial
         self.obj_func = obj_func
         if obj_func_params is None:
             self.obj_func_params = {'timeout': 0}
@@ -289,7 +290,7 @@ class ParslRunner:
                         experiment_id=self.experiment.id,
                         obj_parameters={},
                     )
-                    if save_fail_trial:
+                    if self.save_fail_trial:
                         self.storage.saveResult(self.session, trial)
                     self.run_result['success'] = False
                     self.run_result['message'][f'experiment {self.experiment.id} run {self.run_number}, config is {parameter_configs}'] = (f'Failed to complete trials {idx}:\nError: {e};\t{err_traceback};\toutput is {result}')

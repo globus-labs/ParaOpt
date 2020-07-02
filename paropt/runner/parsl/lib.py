@@ -516,7 +516,7 @@ def localConstrainedObjective(runConfig, **kwargs):
     
     if 'f1_boundary' in kwargs:
         f1_boundary = kwargs['f1_boundary']
-        if 'time_boundary' in kwargs['time_boundary']:
+        if 'time_boundary' in kwargs:
             time_boundary = kwargs['time_boundary']
         else:
             time_boundary = 1
