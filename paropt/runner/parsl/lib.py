@@ -577,28 +577,30 @@ def localConstrainedObjective(runConfig, **kwargs):
             # caller time here in sec
             str_res = outs.decode('utf-8')
             res = str_res.strip().split()
-            obj_parameters = {'running_time': float(res[-1]), 'precision': float(res[-3]), 'recall': float(res[-2]), 'caller_time': float(res[-1])}
+            # obj_parameters = {'running_time': float(res[-1]), 'precision': float(res[-3]), 'recall': float(res[-2]), 'caller_time': float(res[-1])}
+            obj_parameters = {'running_time': float(res[-1]), 'f1': float(res[-2]), 'caller_time': float(res[-1])}
             
             # the output of utility, which is used by optimizer
             if obj_func == 'objective':
-                obj_output = objective(obj_parameters['caller_time'], f1_obj(obj_parameters['precision'], obj_parameters['recall']))
+                # obj_output = objective(obj_parameters['caller_time'], f1_obj(obj_parameters['precision'], obj_parameters['recall']))
+                obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
             elif obj_func == 'default':
-                obj_output = default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
+                obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
             elif obj_func == 'boundary_default':
-                obj_output = boundary_default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
+                obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
 
             ret_dic['obj_parameters'] = obj_parameters
             ret_dic['obj_output'] = obj_output
             
             return ret_dic
         except subprocess.TimeoutExpired:
-            obj_parameters = {'running_time': timeout, 'precision': 0, 'recall': 0, 'caller_time': timeout}
+            obj_parameters = {'running_time': timeout, 'f1': 0, 'caller_time': timeout}
             if obj_func == 'objective':
-                obj_output = objective(obj_parameters['caller_time'], f1_obj(obj_parameters['precision'], obj_parameters['recall']))
+                obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
             elif obj_func == 'default':
-                obj_output = default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
+                obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
             elif obj_func == 'boundary_default':
-                obj_output = boundary_default(obj_parameters['running_time'], f1_cal(obj_parameters['precision'], obj_parameters['recall']))
+                obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
 
             ret_dic['obj_output'] = obj_output
             ret_dic['obj_parameters'] = obj_parameters
