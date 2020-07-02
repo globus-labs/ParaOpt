@@ -513,8 +513,13 @@ def localConstrainedObjective(runConfig, **kwargs):
         obj_func = kwargs['objective']
     else:
         obj_func = 'default'
-    if 'boundary' in kwargs:
-        boundary = kwargs['boundary']
+    
+    if 'f1_boundary' in kwargs:
+        f1_boundary = kwargs['boundary']
+        if 'time_boundary' in kwargs['time_boundary']:
+            time_boundary = kwargs['time_boundary']
+        else:
+            time_boundary = 1
         if obj_func == 'default':
             obj_func = 'boundary_default'
     
@@ -536,12 +541,11 @@ def localConstrainedObjective(runConfig, **kwargs):
 
 
     def boundary_default(time, f1):
-        # change time to hour unit
-        time = time / 60 / 60
-        return f1 + (-min(0, boundary - time)**2-min(0, boundary - time)) * (f1/abs(boundary - time))
-        if precision + recall == 0:
+        time = time/60
+        if f1 < f1_boundary:
             return 0
-        return 2*precision*recall/(precision+recall)
+        return f1 - sigmoid(time - time_boundary)*0.5
+
 
     def default(time, f1):
         return f1

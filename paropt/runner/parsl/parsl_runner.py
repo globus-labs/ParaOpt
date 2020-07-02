@@ -204,7 +204,7 @@ class ParslRunner:
                     result = self.obj_func(runConfig, **initializing_func_param).result()
                 
                 # run baseline experiment
-                if self.baseline and self.get_baseline_output is False:
+                if (self.baseline) and (self.get_baseline_output is False):
                     self.baseline = False
                     logger.info(f'Creating baseline trial')
                     baseline_parameter_configs = []
