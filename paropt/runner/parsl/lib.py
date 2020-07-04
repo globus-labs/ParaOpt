@@ -589,9 +589,9 @@ def localConstrainedObjective(runConfig, **kwargs):
                 # obj_output = objective(obj_parameters['caller_time'], f1_obj(obj_parameters['precision'], obj_parameters['recall']))
                 obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
             elif obj_func == 'default':
-                obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
+                obj_output = default(obj_parameters['caller_time'], obj_parameters['f1'])
             elif obj_func == 'boundary_default':
-                obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
+                obj_output = boundary_default(obj_parameters['caller_time'], obj_parameters['f1'])
 
             ret_dic['obj_parameters'] = obj_parameters
             ret_dic['obj_output'] = obj_output
@@ -600,11 +600,12 @@ def localConstrainedObjective(runConfig, **kwargs):
         except subprocess.TimeoutExpired:
             obj_parameters = {'running_time': timeout, 'f1': 0, 'caller_time': timeout}
             if obj_func == 'objective':
+                # obj_output = objective(obj_parameters['caller_time'], f1_obj(obj_parameters['precision'], obj_parameters['recall']))
                 obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
             elif obj_func == 'default':
-                obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
+                obj_output = default(obj_parameters['caller_time'], obj_parameters['f1'])
             elif obj_func == 'boundary_default':
-                obj_output = objective(obj_parameters['caller_time'], obj_parameters['f1'])
+                obj_output = boundary_default(obj_parameters['caller_time'], obj_parameters['f1'])
 
             ret_dic['obj_output'] = obj_output
             ret_dic['obj_parameters'] = obj_parameters
