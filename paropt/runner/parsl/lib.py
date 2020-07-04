@@ -548,7 +548,7 @@ def localConstrainedObjective(runConfig, **kwargs):
         time = time/60
         if f1 < f1_boundary:
             return 0
-        return f1 - sigmoid((time - time_boundary)/sigmoid_coef)*0.5
+        return f1 - sigmoid((time - time_boundary)/sigmoid_coef)*f1_boundary
 
 
     def default(time, f1):
